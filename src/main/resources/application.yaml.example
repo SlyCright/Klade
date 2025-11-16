@@ -1,0 +1,30 @@
+# ============================================================================
+# CONFIGURATION TEMPLATE
+# ============================================================================
+# Copy this file to 'application-local.yaml' and fill in your actual credentials.
+# NEVER commit the real 'application-local.yaml' file - it's in .gitignore.
+#
+# This overrides ONLY the properties you specify, not the entire configuration.
+# ============================================================================
+
+spring:
+  datasource:
+    # Your local PostgreSQL password
+    password: YOUR_POSTGRES_PASSWORD_HERE
+
+    # Optional: override other database settings if needed
+    # url: jdbc:postgresql://localhost:5432/klade
+    # username: postgres
+
+  security:
+    user:
+      # Your local admin password
+      password: ${SPRING_SECURITY_USER_PASSWORD}
+
+      # Optional: override other admin settings if needed
+      # name: ${SPRING_SECURITY_USER_NAME:admin}
+      # roles: USER, ADMIN
+
+# Example of overriding other development settings:
+# vaadin:
+#   launch-browser: false

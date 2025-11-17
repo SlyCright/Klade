@@ -9,7 +9,7 @@ An open-source multiplayer evolutionary simulation where players create species 
 A hobby project driven by a vision I couldn't find anywhere else. I'm genuinely curious what creatures become at high evolution levels. Open to community contributions. The core game will always remain open-source.
 
 ## Tech Stack
-- **Backend**: Spring Boot 3.5.7 + Java 18
+- **Backend**: Spring Boot 3.5.7 + Java 17
 - **UI**: Vaadin 24.9.5 (Java-only)
 - **Simulation**: libGDX (GWT/HTML5 client)
 - **Database**: PostgreSQL

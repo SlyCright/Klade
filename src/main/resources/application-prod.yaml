@@ -1,0 +1,31 @@
+# Production configuration - overrides application.yaml
+server:
+  port: 8081
+  forward-headers-strategy: framework  # Trust headers from IIS reverse proxy
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/klade}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # It's temporary while the database doesn't stabilize
+    show-sql: false
+  security:
+    user:
+      name: ${SPRING_SECURITY_USER_NAME:admin}
+      password: ${SPRING_SECURITY_USER_PASSWORD}
+
+vaadin:
+  productionMode: true
+  launch-browser: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # Expose health check for monitoring
+  endpoint:
+    health:
+      show-details: when-authorized

@@ -1,0 +1,82 @@
+# TECHNICAL DEBT:
+#
+# This workflow embeds deployment logic directly in the application repository, using
+# Windows-specific paths and commands. This violates the principle that deployment should be
+# infrastructure-agnostic. If we changed hosting to Linux or cloud, this entire workflow would
+# need replacement.
+#
+# We accept this debt because the current constrains to Windows Server bare-metal deployment. For
+# a single-maintainer hobby project, the simplicity of keeping deployment logic here outweighs
+# the benefits of separation.
+
+# DEPLOYMENT SETUP NOTES:
+# If self-hosted runner needs re-setup, see docs/github-runner-setup.md
+# Use --unattended flag to avoid hanging prompts
+
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven (Production)
+        run: ./mvnw clean package -Pproduction -DskipTests
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: klade-app
+          path: target/web-app-*.jar
+          retention-days: 5
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: klade-app
+          path: C:\apps\klade\new
+
+      - name: Stop existing service
+        run: |
+          Stop-Service -Name KladeApp -Force -ErrorAction SilentlyContinue
+          Start-Sleep -Seconds 5
+
+      - name: Backup current JAR
+        run: |
+          $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+          if (Test-Path "C:\apps\klade\klade-app.jar") {
+            Move-Item -Path "C:\apps\klade\klade-app.jar" -Destination "C:\apps\klade\backups\klade-app_$timestamp.jar" -Force
+          }
+
+      - name: Deploy new JAR
+        run: |
+          Move-Item -Path "C:\apps\klade\new\web-app-*.jar" -Destination "C:\apps\klade\klade-app.jar" -Force
+          Remove-Item -Path "C:\apps\klade\new" -Recurse -Force
+
+      - name: Start service
+        run: Start-Service -Name KladeApp
+
+      - name: Verify deployment
+        run: |
+          Start-Sleep -Seconds 10
+          $status = Invoke-WebRequest -Uri "http://localhost:8081/actuator/health" -UseBasicParsing
+          if ($status.StatusCode -ne 200) { exit 1 }

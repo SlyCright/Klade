@@ -60,8 +60,28 @@ jobs:
 
       - name: Stop existing service
         run: |
+          Write-Host "Stopping KladeApp service..."
           Stop-Service -Name KladeApp -Force -ErrorAction SilentlyContinue
-          Start-Sleep -Seconds 15
+          
+          # Wait for service to actually stop (max 90 seconds)
+          $timeout = 90
+          $elapsed = 0
+          while ((Get-Service -Name KladeApp).Status -ne 'Stopped' -and $elapsed -lt $timeout) {
+          Write-Host "Waiting for KladeApp service to stop... ($elapsed/$timeout seconds)"
+          Start-Sleep -Seconds 5
+          $elapsed += 5
+          }
+          
+          if ((Get-Service -Name KladeApp).Status -ne 'Stopped') {
+          Write-Error "KladeApp service failed to stop within $timeout seconds"
+          # Show any remaining Java processes
+          Get-Process java -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, StartTime
+          throw "Service stop timeout"
+          }
+          
+          # Additional buffer for file handle release
+          Write-Host "Service stopped. Waiting 10 seconds for file handles to release..."
+          Start-Sleep -Seconds 10
 
       - name: Backup current JAR
         run: |

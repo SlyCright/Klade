@@ -10,7 +10,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop # It's temporary while the database doesn't stabilize
+      ddl-auto: create-drop # It's temporary for prod until the database stabilizes
     show-sql: false
   security:
     user:

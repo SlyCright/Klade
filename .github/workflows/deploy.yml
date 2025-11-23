@@ -61,7 +61,7 @@ jobs:
       - name: Stop existing service
         run: |
           Stop-Service -Name KladeApp -Force -ErrorAction SilentlyContinue
-          Start-Sleep -Seconds 5
+          Start-Sleep -Seconds 15
 
       - name: Backup current JAR
         run: |

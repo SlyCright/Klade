@@ -10,8 +10,9 @@
 # the benefits of separation.
 
 # DEPLOYMENT SETUP NOTES:
-# If self-hosted runner needs re-setup, see docs/github-runner-setup.md
-# Use --unattended flag to avoid hanging prompts
+#  If a self-hosted runner needs re-setup, see docs/github-runner-setup.md:
+# - Use --unattended flag to avoid hanging prompts
+# - Adjust rights for GitHub's runner so it can stop KladeApp service
 
 name: Deploy
 

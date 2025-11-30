@@ -29,6 +29,10 @@ ext {
 	set('vaadinVersion', "24.9.6")
 }
 
+vaadin {
+	productionMode = project.hasProperty('production')
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

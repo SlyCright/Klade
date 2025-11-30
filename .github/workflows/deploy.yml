@@ -33,7 +33,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
+          cache: gradle
 
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew

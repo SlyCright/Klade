@@ -1,10 +1,29 @@
+# Local configuration with secrets - NEVER commit this
+application-local.yaml
+
+# Private development notes
+BACKLOG-PRIVATE.md
+
+# Dependencies
 node_modules
-HELP.md
+
+# Build outputs
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+!/src/main/**/build/
+!/src/test/**/build/
+# Safety net: ignore Maven target folder in case someone runs Maven commands
+target/
+
+# Spring Boot
+HELP.md
+
+### Vaadin ###
+# Generated frontend files
+src/main/frontend/generated/
+# Vaadin index.html (generated)
+index.html
 
 ### STS ###
 .apt_generated
@@ -15,8 +34,8 @@ build/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+!/src/main/**/bin/
+!/src/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
@@ -24,8 +43,8 @@ bin/
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+!/src/main/**/out/
+!/src/test/**/out/
 
 ### NetBeans ###
 /nbproject/private/

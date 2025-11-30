@@ -1,4 +1,4 @@
-package site.klade.web_app;
+package site.klade.webapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

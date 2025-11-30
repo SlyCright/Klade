@@ -16,10 +16,12 @@ spring:
     hibernate:
       ddl-auto: create-drop # It's temporary for prod until the database stabilizes
     show-sql: false
-  security:
-    user:
-      name: ${SPRING_SECURITY_USER_NAME:admin}
-      password: ${SPRING_SECURITY_USER_PASSWORD}
+
+# Security dependencies switched off temporarily since the MVP wouldn't be multiplayer
+#  security:
+#    user:
+#      name: ${SPRING_SECURITY_USER_NAME:admin}
+#      password: ${SPRING_SECURITY_USER_PASSWORD}
 
 vaadin:
   productionMode: true

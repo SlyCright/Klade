@@ -15,11 +15,13 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  security:
-    user:
-      name: ${SPRING_SECURITY_USER_NAME:admin}
-      password: ${SPRING_SECURITY_USER_PASSWORD}
-      roles: USER, ADMIN
+
+# Security dependencies switched off temporarily since the MVP wouldn't be multiplayer
+#  security:
+#    user:
+#      name: ${SPRING_SECURITY_USER_NAME:admin}
+#      password: ${SPRING_SECURITY_USER_PASSWORD}
+#      roles: USER, ADMIN
 
 vaadin:
   launch-browser: true

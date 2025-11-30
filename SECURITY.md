@@ -1,11 +1,13 @@
 # Security Policy
 
-**Version:** 2025.11.16_ver.01
+**Version:** 2025.11.30_ver.02
+
+## Security dependencies switched off temporarily since the MVP wouldn't be multiplayer
 
 ## Reporting Vulnerabilities
 **DO NOT open public issues for security vulnerabilities.**
 
-Email: sly.crigh+klade@gmail.com
+Email: sly.cright+klade@gmail.com
 
 ## Future Security Considerations
 - OAuth2 client implementation needs review

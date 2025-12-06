@@ -2,12 +2,15 @@
 
 **Version:** 2025.11.30_ver.02
 
-## Security dependencies switched off temporarily since the MVP wouldn't be multiplayer
+## Security spring dependencies switched off temporarily since the MVP wouldn't be multiplayer
 
 ## Reporting Vulnerabilities
 **DO NOT open public issues for security vulnerabilities.**
 
 Email: sly.cright+klade@gmail.com
+
+## Security considerations
+- CI/CD pipeline vulnerabilities review needed 
 
 ## Future Security Considerations
 - OAuth2 client implementation needs review

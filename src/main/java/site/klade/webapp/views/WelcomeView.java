@@ -22,7 +22,7 @@ public class WelcomeView extends VerticalLayout {
         setPadding(true);
 
         // Title
-        H1 title = new H1("Klade");
+        H1 title = new H1("The Klade!");
         title.getStyle().set("font-size", "4rem")
                          .set("margin", "0");
 

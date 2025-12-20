@@ -11,6 +11,8 @@ Email: sly.cright+klade@gmail.com
 
 ## Security considerations
 - CI/CD pipeline vulnerabilities review needed 
+- WebConfig CORS vulnerability review needed
+- libGDX iframe vulnerability review needed
 
 ## Future Security Considerations
 - OAuth2 client implementation needs review

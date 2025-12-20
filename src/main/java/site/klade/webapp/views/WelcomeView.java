@@ -1,5 +1,6 @@
 package site.klade.webapp.views;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -33,6 +34,7 @@ public class WelcomeView extends VerticalLayout {
         addHeader();
         addDescription();
         addCallToAction();
+        addStageButton();
         addFooter();
     }
 
@@ -83,6 +85,13 @@ public class WelcomeView extends VerticalLayout {
         );
         actionLayout.add(boostyButton, githubButton);
         add(actionLayout);
+    }
+
+    private void addStageButton() {
+        Button stageButton = new Button("Launch Stage",
+                event -> UI.getCurrent().navigate("stage"));
+        stageButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        add(stageButton);
     }
 
     private Button createActionButton(String text, String url, VaadinIcon icon) {

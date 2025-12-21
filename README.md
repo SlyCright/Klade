@@ -1,12 +1,30 @@
 # Klade Evolutionary Simulation Game
 
-**Version:** 2025.11.30_ver.02  
+**Version:** 2025.21.21_ver.03  
 
 ## Description
 An open-source multiplayer evolutionary simulation where players create species and watch their 2D specimens compete in dynamic arenas with fluid animations and particle effects.
 
 ## Vision
 A hobby project driven by a vision I couldn't find anywhere else. I'm genuinely curious what creatures become at high evolution levels. Open to community contributions. The core game will always remain open-source.
+
+## Project Structure
+The Klade application follows a **three-project portal architecture**:
+- **main** (this repository): Spring Boot + Vaadin management interface
+- **[stage](https://github.com/SlyCright/klade-stage)**: libGDX HTML5 simulation client (separate repository)
+- **simulation**: Shared simulation logic (future separate repository)
+Each project is an independent project with its own Git repository and Gradle build. The Vaadin 
+  UI embeds the stage client via iframe for seamless integration.
+
+### How the Components Connect
+- **Management UI and backend** runs on `localhost:8080` (Vaadin)
+- **Simulation Client** runs on `localhost:8082` (libGDX GWT)
+- **Integration**: Iframe in Vaadin loads HTML5 client; HUD overlay uses absolute positioning
+- **Communication**: WebSocket STOMP for real-time data exchange 
+See the [klade-stage](https://github.com/SlyCright/klade-stage) repository for libGDX client setup and development.
+
+## Current State
+The iframe integration proof-of-concept is complete. The Vaadin management UI can successfully launch and overlay controls on the libGDX simulation client. The project is ready for implementation of core simulation logic and graphics pipeline development.
 
 ## Tech Stack
 - **Backend**: Spring Boot 3.5.8 + Java 17

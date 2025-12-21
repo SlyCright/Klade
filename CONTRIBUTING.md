@@ -1,6 +1,6 @@
 # Contributing to Klade
 
-**Version:** 2025.11.30_ver.02
+**Version:** 2025.12.21_ver.03
 
 ## Greetings
 Thank you for your interest!
@@ -10,12 +10,30 @@ Thank you for your interest!
 - **Graphics developers**: libGDX rendering pipeline expertise
 - **Community builders**: Documentation, issue triage, outreach
 
-## Development Constraints (Negotiable)
+## Development Constraints
 - **Java-only server-side**: No handwritten HTML/CSS/JS
 - **Monolithic Spring Boot**: No microservices
 - **Windows Server deployment**: Paths and scripts must be Windows-compatible
 - **No Docker**: Bare metal JAR execution
 - **Gradle**: Use `./gradlew` wrapper exclusively
+
+## Repository Structure & Contributing
+Klade uses a **multi-repository architecture**. Please contribute to the appropriate repository:
+- **[SlyCright/Klade](https://github.com/SlyCright/Klade)** (this repo): Vaadin UI, server logic, WebSocket endpoints, authentication, database
+- **[SlyCright/klade-stage](https://github.com/SlyCright/klade-stage)**: libGDX rendering, particle effects, arena graphics, client-side simulation
+- **Future: SlyCright/klade-simulation**: Shared ECS components, physics engine, genetic algorithms
+
+### Where to Open Issues
+- **UI bugs, login problems, database issues**: Open in **main** repository
+- **Rendering glitches, graphics performance, GWT compilation**: Open in **stage** repository
+- **Uncertain?** Open in main repository and I'll transfer it
+
+### Working with Multiple Repositories
+1. **Clone each repository separately** into distinct folders
+2. **Open each as independent IntelliJ IDEA projects** (do NOT open as modules)
+3. **Use separate Gradle tool windows** for each project
+4. **Run on different ports** simultaneously (main: 8080, stage: 8082)
+When making changes that affect both repositories (e.g., API contracts), open pull requests in both repos and reference each other.
 
 ## Getting Started
 1. Fork the repository

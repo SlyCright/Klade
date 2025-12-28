@@ -24,7 +24,6 @@ public class AsyncSimulationService {
 
     @Async
     @SneakyThrows
-    //@PostConstruct
     @SuppressWarnings("BusyWait")
     public void startSimulation() {
         log.info("Starting simulation");
@@ -34,8 +33,8 @@ public class AsyncSimulationService {
         long loopCounter = 0;
         while (running.get()) {
             currentSimulation.get().update();
-            Thread.sleep(10);
-            if (loopCounter % 100 == 0) {
+            Thread.sleep(2);
+            if (loopCounter % 1000 == 0) {
                 SimulationDto simulationDto = currentSimulation.get().getSimulationDto();
                 log.info("Total ticks: {}, Rhyme node state changes: {}, Rhyme node active: {}",
                         simulationDto.getTotalTicks(),

@@ -35,6 +35,7 @@ public class WelcomeView extends VerticalLayout {
         addDescription();
         addCallToAction();
         addStageButton();
+        addSimulationButton();
         addFooter();
     }
 
@@ -92,6 +93,13 @@ public class WelcomeView extends VerticalLayout {
                 event -> UI.getCurrent().navigate("stage"));
         stageButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
         add(stageButton);
+    }
+
+    private void addSimulationButton() {
+        Button simulationButton = new Button("Launch Simulation",
+                event -> UI.getCurrent().navigate("simulation"));
+        simulationButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        add(simulationButton);
     }
 
     private Button createActionButton(String text, String url, VaadinIcon icon) {

@@ -23,6 +23,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 ext {
@@ -34,6 +35,7 @@ vaadin {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 //  This is switched off temporarily since the MVP wouldn't be multiplayer
@@ -43,6 +45,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'com.vaadin:vaadin-spring-boot-starter'
+    implementation 'site.klade:simulation:0.0.1'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

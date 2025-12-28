@@ -25,3 +25,7 @@ spring:
 
 vaadin:
   launch-browser: true
+
+logging:
+  level:
+    site.klade.webapp.views: TRACE # or DEBUG, INFO, WARN, ERROR

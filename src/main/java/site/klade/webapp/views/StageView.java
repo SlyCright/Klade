@@ -3,9 +3,9 @@ package site.klade.webapp.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.IFrame;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -47,32 +47,54 @@ public class StageView extends Div {
                 .set("z-index", "1");
         // Minimal HUD Panel (top-left overlay)
         VerticalLayout hudPanel = new VerticalLayout();
+        hudPanel.setSpacing(false);
+        hudPanel.setPadding(false);
         hudPanel.getStyle().set("position", "absolute")
                 .set("top", "20px")
                 .set("left", "20px")
                 .set("z-index", "1000")
-                .set("background", "rgba(0, 0, 0, 0.3333)")
-                .set("padding", "6px")
-                .set("border-radius", "6px")
+                .set("background", "rgba(0, 0, 0, 0.6666)")
+                .set("padding", "4px")
+                .set("border-radius", "4px")
                 .set("color", "white")
-                .set("min-width", "200px")
                 .set("margin", "0");
-        H3 title = new H3("Simulation");
-        title.getStyle().set("margin", "0 0 8px 0").set("font-size", "1.2rem");
-        ticksDisplay = new Paragraph("Ticks: 0");
-        ticksDisplay.getStyle().set("margin", "0px 0");
-        stateChangesDisplay = new Paragraph("Changes: 0");
-        stateChangesDisplay.getStyle().set("margin", "0px 0");
-        statusDisplay = new Paragraph("Status: INACTIVE");
-        statusDisplay.getStyle().set("margin", "0px 0");
-        Button startButton = new Button("Start", event -> {
+        // Line 1: Buttons
+        HorizontalLayout buttonsLine = new HorizontalLayout();
+        buttonsLine.setSpacing(false);
+        buttonsLine.setPadding(false);
+        buttonsLine.getStyle().set("margin", "0").set("gap", "4px");
+        Button startButton = new Button("Start simulation", event -> {
             simulationService.startSimulation();
-            UI.getCurrent().getPage().executeJs("console.log('Server simulation started');");
+            UI.getCurrent().getPage().executeJs(
+                    "console.log('Server simulation started');");
             startPolling(simulationService);
         });
-        startButton.getStyle().set("margin-top", "8px")
-                .set("font-size", "0.9rem");
-        hudPanel.add(title, ticksDisplay, stateChangesDisplay, statusDisplay, startButton);
+        startButton.getStyle().set("margin", "0").set("font-size", "0.9rem");
+        Button stopButton = new Button("Stop simulation", event -> {
+            simulationService.stopSimulation();
+            UI.getCurrent().getPage().executeJs(
+                    "console.log('Server simulation stopped');");
+        });
+        stopButton.getStyle().set("margin", "0").set("font-size", "0.9rem");
+        buttonsLine.add(startButton, stopButton);
+        // Line 2: All statuses
+        VerticalLayout statusesLine = new VerticalLayout();
+        statusesLine.setSpacing(false);
+        statusesLine.setPadding(false);
+        statusesLine.getStyle().set("margin", "0");
+        ticksDisplay = new Paragraph("Total ticks: 0");
+        stateChangesDisplay = new Paragraph("Rhyme node status changes: 0");
+        statusDisplay = new Paragraph("Rhyme node current status: INACTIVE");
+        // Style statuses - much smaller font
+        ticksDisplay.getStyle()
+                .set("margin", "0").set("font-size", "0.7rem").set("line-height", "1.2");
+        stateChangesDisplay.getStyle()
+                .set("margin", "0").set("font-size", "0.7rem").set("line-height", "1.2");
+        statusDisplay.getStyle()
+                .set("margin", "0").set("font-size", "0.7rem").set("line-height", "1.2");
+        statusesLine.add(ticksDisplay, stateChangesDisplay, statusDisplay);
+        // Assemble HUD
+        hudPanel.add(buttonsLine, statusesLine);
         // Container for both components
         Div container = new Div(iframe, hudPanel);
         container.getStyle().set("position", "relative")
@@ -85,13 +107,12 @@ public class StageView extends Div {
     private void startPolling(AsyncSimulationService service) {
         UI ui = UI.getCurrent();
         Thread pollingThread = new Thread(() -> {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(1000);
                     SimulationDto dto = service.getSimulationDto();
                     ui.access(() -> {
-                        ticksDisplay.setText("Total ticks: " +
-                                dto.getTotalTicks());
+                        ticksDisplay.setText("Total ticks: " + dto.getTotalTicks());
                         stateChangesDisplay.setText("Rhyme node status changes: " +
                                 dto.getRhymeNodeStateChanges());
                         statusDisplay.setText("Rhyme node current status: " +
@@ -105,9 +126,9 @@ public class StageView extends Div {
                 }
             }
             ui.access(() -> {
-                ticksDisplay.setText("Ticks: 0");
-                stateChangesDisplay.setText("Changes: 0");
-                statusDisplay.setText("Status: INACTIVE");
+                ticksDisplay.setText("Total ticks: 0");
+                stateChangesDisplay.setText("Rhyme node status changes: 0");
+                statusDisplay.setText("Rhyme node current status: INACTIVE");
             });
         }, "simulation-polling-thread");
         pollingThread.setDaemon(true);

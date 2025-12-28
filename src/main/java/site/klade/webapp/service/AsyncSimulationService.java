@@ -1,6 +1,5 @@
 package site.klade.webapp.service;
 
-import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -42,6 +41,7 @@ public class AsyncSimulationService {
                         simulationDto.getIsRhymeNodeCurrentlyActive());
             }
             loopCounter++;
+            if (loopCounter > 1_000_000) stopSimulation();
         }
     }
 

@@ -24,7 +24,7 @@ jobs:
             --dir src/main/resources/static/stage/ \
             || echo "No stage artifact found, using existing files"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
       - name: Upload stage assets for build job
         uses: actions/upload-artifact@v4
@@ -58,6 +58,9 @@ jobs:
 
       # Force refresh to get latest simulation snapshot
       - name: Build with Gradle (Production)
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
         run: ./gradlew clean build -Pproduction --refresh-dependencies
 
       - name: Upload JAR artifact

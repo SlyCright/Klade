@@ -1,3 +1,19 @@
+# TECHNICAL DEBT:
+#
+# This workflow embeds deployment logic directly in the application repository, using
+# Windows-specific paths and commands. This violates the principle that deployment should be
+# infrastructure-agnostic. If we changed hosting to Linux or cloud, this entire workflow would
+# need replacement.
+#
+# We accept this debt because the current constrains to Windows Server bare-metal deployment. For
+# a single-maintainer hobby project, the simplicity of keeping deployment logic here outweighs
+# the benefits of separation.
+
+# DEPLOYMENT SETUP NOTES:
+#  If a self-hosted runner needs re-setup, see docs/github-runner-setup.md:
+# - Use --unattended flag to avoid hanging prompts
+# - Adjust rights for GitHub's runner so it can stop KladeApp service
+
 name: Deploy
 
 on:

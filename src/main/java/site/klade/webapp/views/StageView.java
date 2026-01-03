@@ -19,7 +19,7 @@ import site.klade.webapp.service.AsyncSimulationService;
 @SuppressWarnings("unused")
 public class StageView extends Div {
 
-    private static final String STAGE_URL = "http://localhost:8082";
+    private static final String STAGE_URL = "/stage/index.html";
 
     private final Paragraph ticksDisplay;
 

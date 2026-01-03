@@ -1,32 +1,50 @@
-# TECHNICAL DEBT:
-#
-# This workflow embeds deployment logic directly in the application repository, using
-# Windows-specific paths and commands. This violates the principle that deployment should be
-# infrastructure-agnostic. If we changed hosting to Linux or cloud, this entire workflow would
-# need replacement.
-#
-# We accept this debt because the current constrains to Windows Server bare-metal deployment. For
-# a single-maintainer hobby project, the simplicity of keeping deployment logic here outweighs
-# the benefits of separation.
-
-# DEPLOYMENT SETUP NOTES:
-#  If a self-hosted runner needs re-setup, see docs/github-runner-setup.md:
-# - Use --unattended flag to avoid hanging prompts
-# - Adjust rights for GitHub's runner so it can stop KladeApp service
-
 name: Deploy
 
 on:
   push:
     branches: [ master ]
+  repository_dispatch:
+    types: [deploy-main]  # Triggered by stage/simulation
   workflow_dispatch:
 
 jobs:
-  build:
+  # Fetch latest stage client before building
+  fetch-stage-client:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
 
+      # Download the latest stage artifact from stage repo
+      - name: Get latest stage client
+        run: |
+          # Download from the most recent successful run
+          gh run download --repo SlyCright/klade-stage \
+            --name stage-dist-latest \
+            --dir src/main/resources/static/stage/ \
+            || echo "No stage artifact found, using existing files"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload stage assets for build job
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-client-assets
+          path: src/main/resources/static/stage/
+          retention-days: 1
+
+  # Build the main application
+  build:
+    needs: fetch-stage-client
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download stage client assets
+        uses: actions/download-artifact@v4
+        with:
+          name: stage-client-assets
+          path: src/main/resources/static/stage/
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -38,8 +56,9 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
+      # Force refresh to get latest simulation snapshot
       - name: Build with Gradle (Production)
-        run: ./gradlew clean build -Pproduction
+        run: ./gradlew clean build -Pproduction --refresh-dependencies
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -48,10 +67,10 @@ jobs:
           path: build/libs/web-app-*.jar
           retention-days: 5
 
+  # Deploy to Windows Server
   deploy:
     needs: build
     runs-on: self-hosted
-
     steps:
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
@@ -61,28 +80,8 @@ jobs:
 
       - name: Stop existing service
         run: |
-          Write-Host "Stopping KladeApp service..."
           Stop-Service -Name KladeApp -Force -ErrorAction SilentlyContinue
-          
-          # Wait for service to actually stop (max 90 seconds)
-          $timeout = 90
-          $elapsed = 0
-          while ((Get-Service -Name KladeApp).Status -ne 'Stopped' -and $elapsed -lt $timeout) {
-          Write-Host "Waiting for KladeApp service to stop... ($elapsed/$timeout seconds)"
-          Start-Sleep -Seconds 5
-          $elapsed += 5
-          }
-          
-          if ((Get-Service -Name KladeApp).Status -ne 'Stopped') {
-          Write-Error "KladeApp service failed to stop within $timeout seconds"
-          # Show any remaining Java processes
-          Get-Process java -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, StartTime
-          throw "Service stop timeout"
-          }
-          
-          # Additional buffer for file handle release
-          Write-Host "Service stopped. Waiting 10 seconds for file handles to release..."
-          Start-Sleep -Seconds 10
+          Start-Sleep -Seconds 15
 
       - name: Backup current JAR
         run: |

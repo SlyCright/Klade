@@ -82,17 +82,23 @@ public class StageView extends Div {
         statusesLine.setSpacing(false);
         statusesLine.setPadding(false);
         statusesLine.getStyle().set("margin", "0");
+        var space = new Paragraph("____");
+        space.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        var header = new Paragraph("Simulation run on server:");
+        header.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
         ticksDisplay = new Paragraph("Total ticks: 0");
         stateChangesDisplay = new Paragraph("Rhyme node status changes: 0");
         statusDisplay = new Paragraph("Rhyme node current status: INACTIVE");
         // Style statuses - much smaller font
         ticksDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.7rem").set("line-height", "1.2");
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
         stateChangesDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.7rem").set("line-height", "1.2");
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
         statusDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.7rem").set("line-height", "1.2");
-        statusesLine.add(ticksDisplay, stateChangesDisplay, statusDisplay);
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        statusesLine.add(space, header, ticksDisplay, stateChangesDisplay, statusDisplay);
         // Assemble HUD
         hudPanel.add(buttonsLine, statusesLine);
         // Container for both components

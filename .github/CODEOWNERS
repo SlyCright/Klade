@@ -1,0 +1,15 @@
+# Default owner for everything
+* @SlyCright
+
+# CI/CD configuration files
+.github/workflows/ @SlyCright
+*.yml @SlyCright
+*.yaml @SlyCright
+
+# Deployment scripts
+deploy.yml @SlyCright
+docs/github-runner-setup.md @SlyCright
+
+# Security-sensitive files
+SECURITY.md @SlyCright
+application-prod.yaml @SlyCright

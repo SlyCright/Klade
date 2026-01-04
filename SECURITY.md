@@ -1,6 +1,6 @@
 # Security Policy
 
-**Version:** 2025.11.30_ver.02
+**Version:** 2026.01.04_ver.03
 
 ## Security spring dependencies switched off temporarily since the MVP wouldn't be multiplayer
 
@@ -10,8 +10,7 @@
 Email: sly.cright+klade@gmail.com
 
 ## Security considerations
-- CI/CD pipeline vulnerabilities review needed 
-- WebConfig CORS vulnerability review needed
+- CI/CD pipeline vulnerabilities review needed
 - libGDX iframe vulnerability review needed
 
 ## Future Security Considerations

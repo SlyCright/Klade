@@ -1,6 +1,6 @@
 # Contributing to Klade
 
-**Version:** 2025.12.21_ver.03
+**Version:** 2026.01.04_ver.04
 
 ## Greetings
 Thank you for your interest!
@@ -46,6 +46,11 @@ When making changes that affect both repositories (e.g., API contracts), open pu
 - **Development**: `./gradlew bootRun`
 - **Production**: `./gradlew clean build -Pproduction`
 - **Tests**: `./gradlew test`
+
+### Development Workflow
+1. Modify stage client code
+2. Run `./gradlew copyStageToMain` in stage project (builds and copies to main)
+3. Run `./gradlew bootRun` in main project
 
 ## Contact
 Open an issue for architectural discussions before major changes.

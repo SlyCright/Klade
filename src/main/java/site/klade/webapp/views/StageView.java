@@ -58,7 +58,50 @@ public class StageView extends Div {
                 .set("border-radius", "4px")
                 .set("color", "white")
                 .set("margin", "0");
-        // Line 1: Buttons
+        // Section 1: All statuses
+        VerticalLayout statusesLine = new VerticalLayout();
+        statusesLine.setSpacing(false);
+        statusesLine.setPadding(false);
+        statusesLine.getStyle().set("margin", "0");
+        var descriptionP1 = new Paragraph("This control panel represents the server and is provided by Vaadin.");
+        descriptionP1.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        var descriptionP2 = new Paragraph("You can start/stop the simulation.");
+        descriptionP2.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        var descriptionP3 = new Paragraph("It executes the same code that runs in the browser.");
+        descriptionP3.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        var descriptionP4 = new Paragraph("When the server simulation is running, it's easy to see that it runs much faster.");
+        descriptionP4.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        var space = new Paragraph("____");
+        space.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        var header = new Paragraph("Simulation run on server:");
+        header.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        ticksDisplay = new Paragraph("Total ticks: 0");
+        stateChangesDisplay = new Paragraph("Rhyme node status changes: 0");
+        statusDisplay = new Paragraph("Rhyme node current status: INACTIVE");
+        // Style statuses - much smaller font
+        ticksDisplay.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        stateChangesDisplay.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        statusDisplay.getStyle()
+                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
+        statusesLine.add(
+                descriptionP1,
+                descriptionP2,
+                descriptionP3,
+                descriptionP4,
+                space,
+                header,
+                ticksDisplay,
+                stateChangesDisplay,
+                statusDisplay);
+        // Section 2: Buttons
         HorizontalLayout buttonsLine = new HorizontalLayout();
         buttonsLine.setSpacing(false);
         buttonsLine.setPadding(false);
@@ -77,30 +120,8 @@ public class StageView extends Div {
         });
         stopButton.getStyle().set("margin", "0").set("font-size", "0.9rem");
         buttonsLine.add(startButton, stopButton);
-        // Line 2: All statuses
-        VerticalLayout statusesLine = new VerticalLayout();
-        statusesLine.setSpacing(false);
-        statusesLine.setPadding(false);
-        statusesLine.getStyle().set("margin", "0");
-        var space = new Paragraph("____");
-        space.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        var header = new Paragraph("Simulation run on server:");
-        header.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        ticksDisplay = new Paragraph("Total ticks: 0");
-        stateChangesDisplay = new Paragraph("Rhyme node status changes: 0");
-        statusDisplay = new Paragraph("Rhyme node current status: INACTIVE");
-        // Style statuses - much smaller font
-        ticksDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        stateChangesDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        statusDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        statusesLine.add(space, header, ticksDisplay, stateChangesDisplay, statusDisplay);
         // Assemble HUD
-        hudPanel.add(buttonsLine, statusesLine);
+        hudPanel.add(statusesLine, buttonsLine);
         // Container for both components
         Div container = new Div(iframe, hudPanel);
         container.getStyle().set("position", "relative")

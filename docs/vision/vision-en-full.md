@@ -1,7 +1,7 @@
 # I. Klade: General Description
 
 
-**Version:** 2026.01.07_ver.01
+**Version:** 2026.01.25_ver.02
 
 ## 1. Introduction
 
@@ -423,7 +423,7 @@ Klade is an open-source project developed by enthusiasts. We are looking for peo
 
 The project is developed on GitHub: https://github.com/SlyCright/Klade. You can also find documentation for contributors and the current development status there.
 
-If you want to support the project financially, we have an account on Boosty: https://boosty.to/klade. Donations will help cover server costs and allow more time to be dedicated to development.
+If you want to support the project financially, we have an account on Boosty: https://boosty.to/klade (RUS). Donations will help cover server costs and allow more time to be dedicated to development.
 
 ---
 

@@ -1,9 +1,11 @@
 # Klade Evolutionary Simulation Game
 
-**Version:** 2026.01.04_ver.04  
+**Version:** 2026.01.25_ver.05  
 
 ## Description
 An open-source multiplayer evolutionary simulation where players create species and watch their 2D specimens compete in dynamic arenas with fluid animations and particle effects.
+
+## Live Site: [klade.site](https://klade.site/)
 
 ## Vision
 A hobby project driven by a vision I couldn't find anywhere else. I'm genuinely curious what creatures become at high evolution levels. Open to community contributions. The core game will always remain open-source.
@@ -50,6 +52,6 @@ The project is in early development. See `CONTRIBUTING.md` to get involved.
 Run `./gradlew clean build -Pproduction`
 
 ## Community & Support
-- **Funding**: [Boosty](https://boosty.to/klade)
+- **Funding**: [Boosty](https://boosty.to/klade) (RUS)
 - **License**: Apache 2.0 (or your chosen license)
 - **Deployment**: Windows Server bare-metal (no Docker)

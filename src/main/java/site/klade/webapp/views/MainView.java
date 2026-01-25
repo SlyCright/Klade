@@ -44,7 +44,7 @@ public class MainView extends Div {
                         "other");
         H3 subtitle2 = new H3("(Currently in early development)");
         Div explanationBox = createExplanationBox();
-        Button ctaButton = createPrimaryButton("See Tech Prototype →", "stage");
+        Button ctaButton = createPrimaryButton();
         Paragraph ctaCaption = new Paragraph("Technical prototype: current visual simulation, " +
                 "future game arena");
         ctaCaption.addClassName("cta-caption");
@@ -74,7 +74,7 @@ public class MainView extends Div {
                 
                 ### Klade: The Evolution Simulator
                 
-                **Version:** 2026.01.07_ver.01
+                **Version:** 2026.01.25_ver.02
                 
                 #### What is Klade?
                 
@@ -155,7 +155,7 @@ public class MainView extends Div {
                 
                 **Resources:**
                 - GitHub: https://github.com/SlyCright/Klade
-                - Support: https://boosty.to/klade
+                - Support: https://boosty.to/klade (RUS)
                 
                 ---
                 
@@ -239,9 +239,15 @@ public class MainView extends Div {
     private HorizontalLayout createActionButtonsSection() {
         HorizontalLayout actions = new HorizontalLayout();
         actions.addClassName("actions-container");
-        actions.add(createLinkButton("View Architecture on GitHub", GITHUB_URL, VaadinIcon.CODE, false));
-        actions.add(createLinkButton("Fund the Server on Boosty", BOOSTY_URL, VaadinIcon.HEART, true));
-        actions.add(createLinkButton("Read Full Vision Document", VISION_DOC_URL, VaadinIcon.EXTERNAL_LINK, false));
+        actions.add(createLinkButton(
+                "View Architecture on GitHub",
+                GITHUB_URL, VaadinIcon.CODE, false));
+        actions.add(createLinkButton(
+                "Support on Boosty (RUS)",
+                BOOSTY_URL, VaadinIcon.HEART, true));
+        actions.add(createLinkButton(
+                "Read Full Vision Document",
+                VISION_DOC_URL, VaadinIcon.EXTERNAL_LINK, false));
         return actions;
     }
 
@@ -257,8 +263,10 @@ public class MainView extends Div {
         return button;
     }
 
-    private Button createPrimaryButton(String text, String route) {
-        Button button = new Button(text, e -> getUI().ifPresent(ui -> ui.navigate(route)));
+    private Button createPrimaryButton() {
+        Button button = new Button(
+                "See Tech Prototype →",
+                e -> getUI().ifPresent(ui -> ui.navigate("stage")));
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.addClassName("primary-button");
         return button;

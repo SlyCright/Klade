@@ -119,6 +119,6 @@ jobs:
 
       - name: Verify deployment
         run: |
-          Start-Sleep -Seconds 100
+          Start-Sleep -Seconds 60
           $status = Invoke-WebRequest -Uri "http://localhost:8081/actuator/health" -UseBasicParsing
           if ($status.StatusCode -ne 200) { exit 1 }

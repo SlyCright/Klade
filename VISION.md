@@ -87,4 +87,4 @@ Klade is open source and community-driven. Whether you're a developer, designer,
 
 ---
 
-*This is an overview of Klade's vision. For detailed technical documentation, behavioral specifications, and development plans, see the full vision document at [docs/vision-en-full.md](docs/vision-en-full.md).*
+*This is an overview of Klade's vision. For detailed technical documentation, behavioral specifications, and development plans, see the full vision document at [docs/vision/vision-en-full.md](docs/vision/vision-en-full.md).*

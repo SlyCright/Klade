@@ -12,7 +12,7 @@ A hobby project driven by a vision I couldn't find anywhere else. I'm genuinely 
 
 For more details:
 - [VISION.md](VISION.md) — **Short:** The high-level overview of Klade's evolutionary simulation game and its goals.
-- [docs/vision-en-full.md](docs/vision-en-full.md) — **Long:** A detailed overview of Klade's evolutionary simulation game, architecture, and community involvement. It covers the core concepts, planned features, technology stack, and project's vision for the future.
+- [docs/vision/vision-en-full.md](docs/vision/vision-en-full.md) — **Long:** A detailed overview of Klade's evolutionary simulation game, architecture, and community involvement. It covers the core concepts, planned features, technology stack, and project's vision for the future.
 
 ## Project Structure
 The Klade application follows a **three-project portal architecture**:

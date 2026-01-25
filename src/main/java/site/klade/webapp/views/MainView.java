@@ -23,7 +23,7 @@ public class MainView extends Div {
 
     private static final String BOOSTY_URL = "https://boosty.to/klade";
 
-    private static final String VISION_DOC_URL = "https://github.com/SlyCright/Klade/blob/master/docs/vision-en-full.md";
+    private static final String VISION_DOC_URL = "https://github.com/SlyCright/Klade/blob/master/docs/vision/vision-en-full.md";
 
     public MainView() {
         add(createHeroSection());
@@ -160,7 +160,7 @@ public class MainView extends Div {
                 ---
                 
                 *This is an overview of Klade's vision. For detailed technical documentation, behavioral specifications, and development plans, see the full vision document:
-                https://github.com/SlyCright/Klade/blob/master/docs/vision-en-full.md*
+                https://github.com/SlyCright/Klade/blob/master/docs/vision/vision-en-full.md*
                 
                 """;
         Markdown markdown = new Markdown(visionShort);

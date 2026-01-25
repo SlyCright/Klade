@@ -9,6 +9,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.markdown.Markdown;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -168,8 +169,8 @@ public class MainView extends Div {
         return details;
     }
 
-    private HorizontalLayout createFeaturesSection() {
-        HorizontalLayout features = new HorizontalLayout();
+    private VerticalLayout createFeaturesSection() {
+        var features = new VerticalLayout();
         features.addClassName("features-container");
         features.add(createFeatureCard(
                 "♾️",
@@ -188,14 +189,15 @@ public class MainView extends Div {
         return features;
     }
 
-    private Div createFeatureCard(String emoji, String title, String description, String className) {
-        Div card = new Div();
+    private HorizontalLayout createFeatureCard(String emoji, String title, String description, String className) {
+        var card = new HorizontalLayout();
         card.addClassName("feature-card-" + className);
-        Paragraph emojiIcon = new Paragraph(emoji);
+        var emojiIcon = new Paragraph(emoji);
         emojiIcon.addClassName("feature-emoji");
         H5 cardTitle = new H5(title);
-        Paragraph cardDesc = new Paragraph(description);
-        card.add(emojiIcon, cardTitle, cardDesc);
+        var cardContent = new VerticalLayout(cardTitle, new Paragraph(description));
+        cardContent.setSpacing(false);
+        card.add(emojiIcon, cardContent);
         return card;
     }
 

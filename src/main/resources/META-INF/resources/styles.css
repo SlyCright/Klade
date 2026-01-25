@@ -106,7 +106,7 @@
     gap: var(--lumo-space-l);
     justify-content: center;
     padding: 0 var(--lumo-space-xl);
-    max-width: 1200px;
+    max-width: 800px;
     margin: var(--lumo-space-xl) auto;
     flex-wrap: wrap;
 }

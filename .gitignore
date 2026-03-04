@@ -25,6 +25,9 @@ src/main/frontend/generated/
 # Vaadin index.html (generated)
 index.html
 
+# GWT/JavaScript generated files and cache
+src/main/resources/static/stage/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -40,14 +40,11 @@ public class MainView extends Div {
         Div hero = new Div();
         hero.addClassName("hero-section");
         H1 title = new H1("KLADE");
-        H3 subtitle1 = new H3(
-                "Evolution simulation game where digital organisms evolve by fighting each " +
-                        "other");
+        H3 subtitle1 = new H3("Evolution simulation game where digital organisms evolve by fighting each other");
         H3 subtitle2 = new H3("(Currently in early development)");
         Div explanationBox = createExplanationBox();
         Button ctaButton = createPrimaryButton();
-        Paragraph ctaCaption = new Paragraph("Technical prototype: current visual simulation, " +
-                "future game arena");
+        Paragraph ctaCaption = new Paragraph("Technical prototype: current visual simulation, future game arena");
         ctaCaption.addClassName("cta-caption");
         hero.add(title, subtitle1, subtitle2, explanationBox, ctaButton, ctaCaption);
         return hero;
@@ -57,12 +54,20 @@ public class MainView extends Div {
         Div box = new Div();
         box.addClassName("explanation-box");
         H4 header = new H4("How Is This Different From a Normal Game?");
-        Paragraph p1 = new Paragraph("In most games, creatures are designed by artists. In " +
-                "Klade, they're designed by evolution.");
+        Paragraph p1 = new Paragraph("In most games, creatures are designed by artists. In Klade, they're designed by evolution.");
         Paragraph p2 = new Paragraph("They consist of simple parts — a muscle, a timer, a sensor. The computer breeds thousands of variants, keeps the winners, and repeats the process. After a hundred generations, you get creatures that act in ways no human imagined.");
         Paragraph p3 = new Paragraph("While you're away, the server runs at full speed. Check back tomorrow — your species might have evolved a new strategy.");
         box.add(header, p1, p2, p3);
         return box;
+    }
+
+    private Button createPrimaryButton() {
+        Button button = new Button(
+                "See Tech Prototype →",
+                e -> getUI().ifPresent(ui -> ui.navigate("stage")));
+        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        button.addClassName("primary-button");
+        return button;
     }
 
     private Details createShortVisionSection() {
@@ -262,15 +267,6 @@ public class MainView extends Div {
         } else {
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         }
-        return button;
-    }
-
-    private Button createPrimaryButton() {
-        Button button = new Button(
-                "See Tech Prototype →",
-                e -> getUI().ifPresent(ui -> ui.navigate("stage")));
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        button.addClassName("primary-button");
         return button;
     }
 

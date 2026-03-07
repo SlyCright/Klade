@@ -74,5 +74,5 @@ tasks.named('test') {
 }
 
 test {
-    enabled = false // Temporary. Just to make build complete
+    enabled = true
 }

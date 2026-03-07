@@ -17,7 +17,6 @@ public class SimulationService {
 
     public void runCertainGenerations(int number) {
         simulation.runCertainGenerations(number);
-
     }
 
     public void stop() {simulation.stop();

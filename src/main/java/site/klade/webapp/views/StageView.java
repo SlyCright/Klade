@@ -1,5 +1,6 @@
 package site.klade.webapp.views;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
@@ -10,141 +11,164 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import site.klade.simulation.SimulationDto;
-import site.klade.webapp.service.AsyncSimulationService;
+import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
+import site.klade.webapp.service.SimulationService;
 
+@Slf4j
 @Route("stage")
 @AnonymousAllowed
 @PageTitle("Klade Stage")
-@SuppressWarnings("unused")
 public class StageView extends Div {
 
     private static final String STAGE_URL = "/stage/index.html";
 
-    private final Paragraph ticksDisplay;
+    private static final String CLASS_FULL_SIZE = "stage-full-size";
 
-    private final Paragraph stateChangesDisplay;
+    private static final String CLASS_CONTAINER = "stage-container";
 
-    private final Paragraph statusDisplay;
+    private static final String CLASS_HUD_PANEL = "stage-hud-panel";
 
-    public StageView(AsyncSimulationService simulationService) {
-        // Fullscreen layout
-        getStyle().set("position", "relative")
-                .set("width", "100vw")
-                .set("height", "100vh")
-                .set("margin", "0")
-                .set("padding", "0")
-                .set("overflow", "hidden");
-        // libGDX iframe (full screen)
-        IFrame iframe = new IFrame(STAGE_URL);
+    private static final String CLASS_STATUS_LINE = "stage-status-line";
+
+    private static final String CLASS_BUTTONS_LINE = "stage-buttons-line";
+
+    private static final String CLASS_TEXT_COMMON = "stage-text-common";
+
+    private final SimulationService simulationService;
+
+    private Paragraph statusDisplay;
+
+    public StageView(SimulationService simulationService) {
+        this.simulationService = simulationService;
+        structurePage();
+        setupStyle();
+        startPolling();
+    }
+
+    private void structurePage() {
+        // Keep it: Method nesting maps DOM structure for maximum readability and maintainability
+        add(
+                getContainerWith(
+                        getStageAsIFrame(),
+                        getHudPanelWith(
+                                getStatusesLineWith(
+                                        createParagraph("This control panel represents the server and is provided by Vaadin."),
+                                        createParagraph("You can control the /simulation."),
+                                        createParagraph("It executes the same code that runs in the browser."),
+                                        createParagraph("When the server simulation is running, it's easy to see that it runs much faster."),
+                                        createParagraph("___"),
+                                        createParagraph("Simulation run on server:"),
+                                        getStatusDisplayParagraph()
+                                ),
+                                getButtonsLineWith(
+                                        createActionButton("Start simulation", () -> {
+                                            simulationService.start();
+                                            logToConsole("Server simulation started");
+                                        }),
+                                        // TODO: implement GUI for user so they can set desired
+                                        //  amount of the generations to be run
+                                        //  instead of the "1", "10", "100" buttons
+                                        createActionButton("Run next 1 generations", () -> {
+                                            simulationService.runCertainGenerations(1);
+                                            logToConsole("Simulate 1 next generations");
+                                        }),
+                                        createActionButton("Run next 10 generations", () -> {
+                                            simulationService.runCertainGenerations(10);
+                                            logToConsole("Simulate 10 next generations");
+                                        }),
+                                        createActionButton("Run next 100 generations", () -> {
+                                            simulationService.runCertainGenerations(100);
+                                            logToConsole("Simulate 100 next generations");
+                                        }),
+                                        createActionButton("Stop simulation", () -> {
+                                            simulationService.stop();
+                                            logToConsole("Server simulation stopped");
+                                        }),
+                                        createActionButton("Reset simulation", () -> {
+                                            simulationService.reset();
+                                            logToConsole("Reset simulation");
+                                        })
+                                )
+                        )
+                )
+        );
+    }
+
+    private @NonNull IFrame getStageAsIFrame() {
+        final var iframe = new IFrame(STAGE_URL);
         iframe.getElement().setAttribute("frameborder", "0");
-        iframe.getStyle().set("position", "absolute")
-                .set("top", "0")
-                .set("left", "0")
-                .set("width", "100%")
-                .set("height", "100%")
-                .set("border", "none")
-                .set("z-index", "1");
-        // Minimal HUD Panel (top-left overlay)
-        VerticalLayout hudPanel = new VerticalLayout();
+        iframe.addClassName(CLASS_FULL_SIZE);
+        iframe.getStyle().set("z-index", "1");
+        return iframe;
+    }
+
+    private @NonNull VerticalLayout getHudPanelWith(
+            @NonNull VerticalLayout statusesLine, @NonNull HorizontalLayout buttonsLine) {
+        final var hudPanel = new VerticalLayout(statusesLine, buttonsLine);
         hudPanel.setSpacing(false);
         hudPanel.setPadding(false);
-        hudPanel.getStyle().set("position", "absolute")
-                .set("top", "20px")
-                .set("left", "20px")
-                .set("z-index", "1000")
-                .set("background", "rgba(0, 0, 0, 0.6666)")
-                .set("padding", "4px")
-                .set("border-radius", "4px")
-                .set("color", "white")
-                .set("margin", "0");
-        // Section 1: All statuses
-        VerticalLayout statusesLine = new VerticalLayout();
+        hudPanel.addClassName(CLASS_HUD_PANEL);
+        return hudPanel;
+    }
+
+    private @NonNull VerticalLayout getStatusesLineWith(@NonNull Component... components) {
+        final var statusesLine = new VerticalLayout(components);
         statusesLine.setSpacing(false);
         statusesLine.setPadding(false);
-        statusesLine.getStyle().set("margin", "0");
-        var descriptionP1 = new Paragraph("This control panel represents the server and is provided by Vaadin.");
-        descriptionP1.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        var descriptionP2 = new Paragraph("You can start/stop the simulation.");
-        descriptionP2.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        var descriptionP3 = new Paragraph("It executes the same code that runs in the browser.");
-        descriptionP3.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        var descriptionP4 = new Paragraph("When the server simulation is running, it's easy to see that it runs much faster.");
-        descriptionP4.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        var space = new Paragraph("____");
-        space.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        var header = new Paragraph("Simulation run on server:");
-        header.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        ticksDisplay = new Paragraph("Total ticks: 0");
-        stateChangesDisplay = new Paragraph("Rhyme node status changes: 0");
-        statusDisplay = new Paragraph("Rhyme node current status: INACTIVE");
-        // Style statuses - much smaller font
-        ticksDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        stateChangesDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        statusDisplay.getStyle()
-                .set("margin", "0").set("font-size", "0.90rem").set("line-height", "1.2");
-        statusesLine.add(
-                descriptionP1,
-                descriptionP2,
-                descriptionP3,
-                descriptionP4,
-                space,
-                header,
-                ticksDisplay,
-                stateChangesDisplay,
-                statusDisplay);
-        // Section 2: Buttons
-        HorizontalLayout buttonsLine = new HorizontalLayout();
+        statusesLine.addClassName(CLASS_STATUS_LINE);
+        return statusesLine;
+    }
+
+    private @NonNull HorizontalLayout getButtonsLineWith(@NonNull Button... buttons) {
+        HorizontalLayout buttonsLine = new HorizontalLayout(buttons);
         buttonsLine.setSpacing(false);
         buttonsLine.setPadding(false);
-        buttonsLine.getStyle().set("margin", "0").set("gap", "4px");
-        Button startButton = new Button("Start simulation", event -> {
-            simulationService.startSimulation();
-            UI.getCurrent().getPage().executeJs(
-                    "console.log('Server simulation started');");
-            startPolling(simulationService);
-        });
-        startButton.getStyle().set("margin", "0").set("font-size", "0.9rem");
-        Button stopButton = new Button("Stop simulation", event -> {
-            simulationService.stopSimulation();
-            UI.getCurrent().getPage().executeJs(
-                    "console.log('Server simulation stopped');");
-        });
-        stopButton.getStyle().set("margin", "0").set("font-size", "0.9rem");
-        buttonsLine.add(startButton, stopButton);
-        // Assemble HUD
-        hudPanel.add(statusesLine, buttonsLine);
-        // Container for both components
-        Div container = new Div(iframe, hudPanel);
-        container.getStyle().set("position", "relative")
-                .set("width", "100%")
-                .set("height", "100%");
-        add(container);
+        buttonsLine.addClassName(CLASS_BUTTONS_LINE);
+        return buttonsLine;
+    }
+
+    private @NonNull Div getContainerWith(@NonNull IFrame iFrame, @NonNull VerticalLayout hudPanel) {
+        Div container = new Div(iFrame, hudPanel);
+        container.addClassName(CLASS_CONTAINER);
+        return container;
+    }
+
+    private @NonNull Paragraph createParagraph(String text) {
+        final var paragraph = new Paragraph(text);
+        paragraph.addClassName(CLASS_TEXT_COMMON);
+        return paragraph;
+    }
+
+    private @NonNull Paragraph getStatusDisplayParagraph() {
+        this.statusDisplay = new Paragraph("---");
+        statusDisplay.addClassName(CLASS_TEXT_COMMON);
+        return statusDisplay;
+    }
+
+    private @NonNull Button createActionButton(String label, @NonNull Runnable action) {
+        Button button = new Button(label, event -> action.run());
+        button.getStyle().set("margin", "0").set("font-size", "0.9rem");
+        return button;
+    }
+
+    private void logToConsole(String message) {
+        UI.getCurrent().getPage().executeJs(String.format("console.log('%s');", message));
+    }
+
+    private void setupStyle() {
+        addClassName(CLASS_FULL_SIZE);
     }
 
     @SuppressWarnings("BusyWait")
-    private void startPolling(AsyncSimulationService service) {
+    private void startPolling() {
         UI ui = UI.getCurrent();
         Thread pollingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(1000);
-                    SimulationDto dto = service.getSimulationDto();
-                    ui.access(() -> {
-                        ticksDisplay.setText("Total ticks: " + dto.getTotalTicks());
-                        stateChangesDisplay.setText("Rhyme node status changes: " +
-                                dto.getRhymeNodeStateChanges());
-                        statusDisplay.setText("Rhyme node current status: " +
-                                (dto.getIsRhymeNodeCurrentlyActive() ? "ACTIVE" : "INACTIVE"));
-                    });
+                    var dto = simulationService.getSimulationSnapshot();
+                    ui.access(() -> statusDisplay.setText(dto.toString()));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -152,11 +176,7 @@ public class StageView extends Div {
                     break;
                 }
             }
-            ui.access(() -> {
-                ticksDisplay.setText("Total ticks: 0");
-                stateChangesDisplay.setText("Rhyme node status changes: 0");
-                statusDisplay.setText("Rhyme node current status: INACTIVE");
-            });
+            ui.access(() -> statusDisplay.setText("---"));
         }, "simulation-polling-thread");
         pollingThread.setDaemon(true);
         pollingThread.start();

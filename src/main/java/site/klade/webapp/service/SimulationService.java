@@ -13,7 +13,7 @@ import static org.reflections.Reflections.log;
 
 @Service
 @SuppressWarnings("unused")
-public class AsyncSimulationService {
+public class SimulationService {
 
     private final AtomicReference<Simulation> currentSimulation = new AtomicReference<>();
 
@@ -67,5 +67,25 @@ public class AsyncSimulationService {
 
     public boolean isRunning() {
         return running.get();
+    }
+
+    public void start() {
+
+    }
+
+    public void runCertainGenerations(int i) {
+
+    }
+
+    public void stop() {
+
+    }
+
+    public void reset() {
+
+    }
+
+    public Object getSimulationSnapshot() {
+        return null;
     }
 }

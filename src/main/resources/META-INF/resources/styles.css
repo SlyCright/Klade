@@ -249,6 +249,52 @@
     font-size: var(--lumo-font-size-s);
 }
 
+.stage-full-size {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   margin: 0;
+   padding: 0;
+   overflow: hidden;
+   border: none;
+}
+
+.stage-container {
+   position: relative;
+   width: 100%;
+   height: 100%;
+}
+
+.stage-hud-panel {
+   position: absolute;
+   top: 20px;
+   left: 20px;
+   z-index: 1000;
+   background: rgba(0, 0, 0, 0.6666);
+   padding: 4px;
+   border-radius: 4px;
+   color: white;
+   margin: 0;
+}
+
+.stage-status-line {
+   margin: 0;
+}
+
+.stage-buttons-line {
+   margin: 0;
+   gap: 4px;
+}
+
+.stage-text-common {
+   margin: 0;
+   font-size: 0.90rem;
+   line-height: 1.2;
+}
+
+
 /* Responsive */
 @media (max-width: 768px) {
     .hero-section {

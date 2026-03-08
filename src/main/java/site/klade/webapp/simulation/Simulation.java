@@ -151,13 +151,13 @@ public class Simulation {
                     .min(Comparator.comparingDouble(Genome::getFitness))
                     .orElse(genomes.get(0));
             offspringsGenomes.add(eliteGenome);
-            for (int i = 0; i < SPECIMENS_PER_SPECIES - offspringsGenomes.size(); i++) {
+            for (int i = 0; i < SPECIMENS_PER_SPECIES - 1; i++) {
                 var candidate1 = genomes.get(random.nextInt(genomes.size()));
                 var candidate2 = genomes.get(random.nextInt(genomes.size()));
                 var winner = candidate1.getFitness() < candidate2.getFitness()
                         ? candidate1
                         : candidate2;
-                offspringsGenomes.add(Genome.getMutatedZeroFitnessCopyOf(winner));
+                offspringsGenomes.add(Genome.getMutatedAndFitnessMaxedCopyOf(winner));
             }
             var offspringsSpecies = new Species(offspringsGenomes);
             offspringsSpeciesList.add(offspringsSpecies);

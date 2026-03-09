@@ -2,7 +2,7 @@ package site.klade.webapp.service;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
-
+import site.klade.simulation.Genome;
 import site.klade.simulation.SimulationSnapshotDto;
 import site.klade.webapp.simulation.Simulation;
 
@@ -19,7 +19,8 @@ public class SimulationService {
         simulation.runCertainGenerations(number);
     }
 
-    public void stop() {simulation.stop();
+    public void stop() {
+        simulation.stop();
     }
 
     public void reset() {
@@ -35,5 +36,15 @@ public class SimulationService {
     //  application when next generation is ready. Frontend should get notifications as well
     public SimulationSnapshotDto getSimulationSnapshot() {
         return simulation.getSnapshot();
+    }
+
+    // TODO: that is domain's logic move to the Simulation level
+    public Genome getBestGenome() {
+        var snapshot = simulation.getSnapshot();
+        return snapshot.getSpeciesList().stream()
+                .flatMap(species -> species.getGenomes().stream())
+                .reduce((g1, g2) -> g1.getFitness() < g2.getFitness() ? g1 : g2)
+                .map(Genome::new)
+                .orElseGet(() -> new Genome(snapshot.getSpeciesList().get(0).getGenomes().get(0)));
     }
 }

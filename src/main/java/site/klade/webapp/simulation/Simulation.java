@@ -1,5 +1,7 @@
 package site.klade.webapp.simulation;
 
+import lombok.Getter;
+import lombok.Setter;
 import site.klade.simulation.*;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class Simulation {
 
@@ -28,8 +31,13 @@ public class Simulation {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     private ArrayList<Species> speciesList = new ArrayList<>();
+    // TODO: check whether it really can be used later
 
+    @Getter
     private volatile SimulationSnapshotDto snapshot;
+
+    @Setter
+    private Consumer<SimulationSnapshotDto> onGenerationComplete;
 
     private Simulation(SettingsDto settings) {
         this.SPECIES_TOTAL = settings.getSpeciesTotal();
@@ -90,12 +98,6 @@ public class Simulation {
         }
     }
 
-    @SuppressWarnings("") // Suppressed that here can be a lombok's getter.
-    // TODO: check whether it really can be used later
-    public SimulationSnapshotDto getSnapshot() {
-        return this.snapshot;
-    }
-
     private void initialize() {
         generationNumber.set(0);
         speciesList.clear();
@@ -114,6 +116,7 @@ public class Simulation {
             this.snapshot = new SimulationSnapshotDto(
                     generationNumber.getAndIncrement(),
                     DataTransferUtilities.getDeepCopyOf(speciesList));
+            if (onGenerationComplete != null) onGenerationComplete.accept(snapshot);
             createNextGeneration();
         } catch (Exception e) {
             System.out.println("Simulation error: " + e.getMessage());

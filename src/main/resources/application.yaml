@@ -9,7 +9,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create # options: none, validate, update, create, create-drop, drop
     show-sql: false
     properties:
       hibernate:
@@ -28,4 +28,4 @@ vaadin:
 
 logging:
   level:
-    site.klade.webapp.views: TRACE # or DEBUG, INFO, WARN, ERROR
+    site.klade.webapp.views: TRACE # options: TRACE, DEBUG, INFO, WARN, ERROR

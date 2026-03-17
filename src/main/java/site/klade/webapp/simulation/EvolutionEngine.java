@@ -27,10 +27,20 @@ public class EvolutionEngine {
      * Evaluates fitness of all genomes in the given species list by running them in an Arena.
      * The fitness values are set directly on the genome objects.
      */
-    public void evaluateFitness(List<Species> speciesList) {
-        for (Species species : speciesList) {
-            for (Genome genome : species.getGenomes()) {
-                new Arena(genome).run();
+    public void evaluateFitness(List<Species> allSpecies) {
+        ArrayList<Genome> competitionPair = new ArrayList<>(2);
+        for (int speciesIndexI = 0; speciesIndexI < allSpecies.size(); speciesIndexI++) {
+            for (int speciesIndexJ = speciesIndexI + 1; speciesIndexJ < allSpecies.size(); speciesIndexJ++) {
+                List<Genome> genomesI = allSpecies.get(speciesIndexI).getGenomes();
+                List<Genome> genomesJ = allSpecies.get(speciesIndexJ).getGenomes();
+                for (Genome genomeI : genomesI) {
+                    for (Genome genomeJ : genomesJ) {
+                        competitionPair.clear();
+                        competitionPair.add(genomeI);
+                        competitionPair.add(genomeJ);
+                        new Arena(competitionPair).run();
+                    }
+                }
             }
         }
     }

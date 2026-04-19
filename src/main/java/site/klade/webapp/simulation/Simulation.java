@@ -121,9 +121,9 @@ public class Simulation {
             this.snapshot = new SimulationSnapshotDto(
                     generationNumber.get(),
                     DataTransferUtilities.getDeepCopyOf(speciesList));
-            if (onGenerationComplete != null) onGenerationComplete.accept(snapshot);
+            onGenerationComplete.accept(snapshot);
             // 3. Advance to next generation
-            speciesList = new ArrayList<>(evolutionEngine.nextGeneration(speciesList));
+            speciesList = new ArrayList<>(evolutionEngine.getNextGeneration(speciesList));
             generationNumber.incrementAndGet();
         } catch (Exception e) {
             System.out.println("Simulation error: " + e.getMessage());

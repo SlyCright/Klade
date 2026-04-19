@@ -52,7 +52,7 @@ public class EvolutionEngine {
      * @param currentSpecies the current generation's species list
      * @return a new list of Species representing the next generation
      */
-    public List<Species> nextGeneration(List<Species> currentSpecies) {
+    public List<Species> getNextGeneration(List<Species> currentSpecies) {
         List<Species> nextSpecies = new ArrayList<>(currentSpecies.size());
         for (Species species : currentSpecies) {
             List<Genome> currentGenomes = species.getGenomes();
@@ -61,7 +61,7 @@ public class EvolutionEngine {
             Genome elite = currentGenomes.stream()
                     .min(Comparator.comparingDouble(Genome::getFitness))
                     .orElse(currentGenomes.get(0));
-            nextGenomes.add(elite);  // reference is fine; it won't be mutated further
+            nextGenomes.add(new Genome(elite));
             // Fill the rest with mutated offspring from tournament selection
             for (int i = 0; i < specimensPerSpecies - 1; i++) {
                 Genome candidate1 = currentGenomes.get(random.nextInt(currentGenomes.size()));

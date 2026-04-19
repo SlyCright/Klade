@@ -28,9 +28,9 @@ public class SimulationService {
 
     public SimulationService(GenerationRepository generationRepository, ObjectMapper objectMapper) {
         simulation = Simulation.withDefaultSettings();
+        this.simulation.setOnGenerationComplete(this::saveGenerationSnapshot);
         this.generationRepository = generationRepository;
         this.objectMapper = objectMapper;
-        this.simulation.setOnGenerationComplete(this::saveGenerationSnapshot);
     }
 
     public void start() {

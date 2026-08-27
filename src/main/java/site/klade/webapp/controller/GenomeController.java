@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import site.klade.simulation.Genome;
 import site.klade.webapp.service.SimulationService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class GenomeController {
@@ -17,18 +20,25 @@ public class GenomeController {
     }
 
     @GetMapping("/best-genome")
-    public GenomeDto getBestGenome() {
-        Genome best = simulationService.getBestGenome();
-        if (best == null) {
+    public GenomesDto getBestGenome() {
+        List<Genome> bestGenomes = simulationService.getBestGenomesPerSpecies();
+        if (bestGenomes == null) {
             // Return a minimal placeholder or null; client will handle it.
             return null;
         }
-        return new GenomeDto(
-            best.getStartPosition().x,
-            best.getStartPosition().y,
-            best.getInitialImpulse().x,
-            best.getInitialImpulse().y,
-            best.getFitness()
-        );
+        List<GenomeDto> genomeDtos = new ArrayList<>();
+        int speciesIndex = 0;
+        for (Genome best : bestGenomes) {
+            genomeDtos.add(new GenomeDto(
+                best.getStartPosition().x,
+                best.getStartPosition().y,
+                best.getInitialImpulse().x,
+                best.getInitialImpulse().y,
+                best.getFitness(),
+                speciesIndex
+            ));
+            speciesIndex++;
+        }
+        return new GenomesDto(genomeDtos);
     }
 }

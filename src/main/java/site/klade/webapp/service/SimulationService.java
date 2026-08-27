@@ -11,7 +11,9 @@ import site.klade.webapp.entity.GenerationEntity;
 import site.klade.webapp.repository.GenerationRepository;
 import site.klade.webapp.simulation.Simulation;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
@@ -62,7 +64,7 @@ public class SimulationService {
 
     // TODO: Each genome should be stored separately in the DB. Finding the best one is
     //  DB logic, involving comparisons of their fitnesses.
-    public Genome getBestGenome() {
+    public List<Genome> getBestGenomesPerSpecies() {
         GenerationEntity entity = generationRepository.findById(1L).orElse(null);
         if (entity == null) {
             return null;  // no generation saved yet
@@ -70,11 +72,19 @@ public class SimulationService {
         try {
             SimulationSnapshotDto snapshot = objectMapper.readValue(
                     entity.getData(), SimulationSnapshotDto.class);
-            return snapshot.getSpeciesList().stream()
-                    .flatMap(species -> species.getGenomes().stream())
-                    .min(Comparator.comparingDouble(Genome::getFitness))
-                    .map(Genome::new)   // return a copy to avoid mutation
-                    .orElse(null);
+            List<Genome> bestGenomes = new ArrayList<>();
+            int speciesIndex = 0;
+            for (site.klade.simulation.Species species : snapshot.getSpeciesList()) {
+                Genome best = species.getGenomes().stream()
+                        .min(Comparator.comparingDouble(Genome::getFitness))
+                        .map(Genome::new)   // return a copy to avoid mutation
+                        .orElse(null);
+                if (best != null) {
+                    bestGenomes.add(best);
+                }
+                speciesIndex++;
+            }
+            return bestGenomes;
         } catch (Exception e) {
             log.error("Failed to parse saved generation", e);
             return null;
@@ -94,7 +104,7 @@ public class SimulationService {
     }
 
     @Async  // uses the default Spring executor (creates a new thread per call)
-    private void performAsyncSave(SimulationSnapshotDto snapshot) {
+    public void performAsyncSave(SimulationSnapshotDto snapshot) {
         try {
             String json = objectMapper.writeValueAsString(snapshot);
             GenerationEntity entity = generationRepository.findById(1L)

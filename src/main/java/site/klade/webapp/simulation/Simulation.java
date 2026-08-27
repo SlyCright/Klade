@@ -121,6 +121,9 @@ public class Simulation {
             this.snapshot = new SimulationSnapshotDto(
                     generationNumber.get(),
                     DataTransferUtilities.getDeepCopyOf(speciesList));
+            if (onGenerationComplete == null) {
+                throw new IllegalStateException("onGenerationComplete callback must be set before running simulation");
+            }
             onGenerationComplete.accept(snapshot);
             // 3. Advance to next generation
             speciesList = new ArrayList<>(evolutionEngine.getNextGeneration(speciesList));

@@ -24,6 +24,7 @@ class SimulationIntegrationTest {
                 .build();
         
         Simulation simulation = Simulation.with(fastSettings);
+        simulation.setOnGenerationComplete(snapshot -> {});
         
         List<Float> averageFitnesses = new ArrayList<>();
         int generationsToRun = 20;
@@ -48,14 +49,16 @@ class SimulationIntegrationTest {
             
             // Calculate average fitness for this generation
             float totalFitness = 0;
+            int speciesCount = 0;
             int specimenCount = 0;
-            
+
             for (Species species : simulation.getSnapshot().getSpeciesList()) {
                 for (Genome genome : species.getGenomes()) {
                     totalFitness += genome.getFitness();
                     specimenCount++;
-                    System.out.printf("Specimen fitness: %.3f%n", genome.getFitness());
+                    System.out.printf("Specimen %d of species %d, fitness: %.3f%n", specimenCount, speciesCount, genome.getFitness());
                 }
+                speciesCount++;
             }
             
             float averageFitness = totalFitness / specimenCount;

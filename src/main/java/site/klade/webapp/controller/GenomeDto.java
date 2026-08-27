@@ -17,15 +17,18 @@ public class GenomeDto {
 
     private float fitness;
 
+    private int speciesIndex;
+
     // Default constructor for Jackson
     public GenomeDto() {
     }
 
-    public GenomeDto(float startX, float startY, float impulseX, float impulseY, float fitness) {
+    public GenomeDto(float startX, float startY, float impulseX, float impulseY, float fitness, int speciesIndex) {
         this.startX = startX;
         this.startY = startY;
         this.impulseX = impulseX;
         this.impulseY = impulseY;
         this.fitness = fitness;
+        this.speciesIndex = speciesIndex;
     }
 }

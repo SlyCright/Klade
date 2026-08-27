@@ -69,7 +69,7 @@ public class EvolutionEngine {
                 Genome winner = (candidate1.getFitness() < candidate2.getFitness())
                         ? candidate1
                         : candidate2;
-                Genome offspring = Genome.getMutatedAndFitnessMaxedCopyOf(winner);
+                Genome offspring = Genome.getOffspringOf(winner);
                 nextGenomes.add(offspring);
             }
             nextSpecies.add(new Species(nextGenomes));

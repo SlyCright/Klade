@@ -57,6 +57,7 @@ public class SimulationTest {
     void givenSimulationNotRunning_whenRunCertainGenerations_thenGenerationsAdvanced() {
         // Given
         Simulation simulation = Simulation.withDefaultSettings();
+        simulation.setOnGenerationComplete(snapshot -> {});
         int initialGen = simulation.getSnapshot().getGenerationNumber();
         // When
         simulation.runCertainGenerations(3);

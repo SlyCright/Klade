@@ -28,17 +28,17 @@ public class GenomeController {
         }
         List<GenomeDto> genomeDtos = new ArrayList<>();
         int speciesIndex = 0;
-        for (Genome best : bestGenomes) {
-            genomeDtos.add(new GenomeDto(
-                best.getStartPosition().x,
-                best.getStartPosition().y,
-                best.getInitialImpulse().x,
-                best.getInitialImpulse().y,
-                best.getFitness(),
-                speciesIndex
-            ));
-            speciesIndex++;
-        }
+//        for (Genome best : bestGenomes) {
+//            genomeDtos.add(new GenomeDto(
+//                best.getStartPosition().x,
+//                best.getStartPosition().y,
+//                best.getInitialImpulse().x,
+//                best.getInitialImpulse().y,
+//                best.getFitness(),
+//                speciesIndex
+//            ));
+//            speciesIndex++;
+//        }
         return new GenomesDto(genomeDtos);
     }
 }

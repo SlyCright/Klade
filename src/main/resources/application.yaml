@@ -1,6 +1,8 @@
 spring:
   config:
-    import: "optional:classpath:application-local.yaml"
+    import:
+      - "optional:classpath:application-local.yaml"
+      - "optional:classpath:simulation.yaml"
   application:
     name: Klade Web Application
   datasource:

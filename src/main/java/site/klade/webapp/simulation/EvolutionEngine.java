@@ -63,15 +63,15 @@ public class EvolutionEngine {
                     .orElse(currentGenomes.get(0));
             nextGenomes.add(new Genome(elite));
             // Fill the rest with mutated offspring from tournament selection
-            for (int i = 0; i < specimensPerSpecies - 1; i++) {
-                Genome candidate1 = currentGenomes.get(random.nextInt(currentGenomes.size()));
-                Genome candidate2 = currentGenomes.get(random.nextInt(currentGenomes.size()));
-                Genome winner = (candidate1.getFitness() < candidate2.getFitness())
-                        ? candidate1
-                        : candidate2;
-                Genome offspring = Genome.getOffspringOf(winner);
-                nextGenomes.add(offspring);
-            }
+//            for (int i = 0; i < specimensPerSpecies - 1; i++) {
+//                Genome candidate1 = currentGenomes.get(random.nextInt(currentGenomes.size()));
+//                Genome candidate2 = currentGenomes.get(random.nextInt(currentGenomes.size()));
+//                Genome winner = (candidate1.getFitness() < candidate2.getFitness())
+//                        ? candidate1
+//                        : candidate2;
+//                Genome offspring = Genome.getOffspringOf(winner);
+//                nextGenomes.add(offspring);
+//            }
             nextSpecies.add(new Species(nextGenomes));
         }
         return nextSpecies;

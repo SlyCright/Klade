@@ -1,0 +1,3 @@
+simulation:
+  specimen-max-initial-distance: 200f
+  specimen-min-initial-distance: 150f

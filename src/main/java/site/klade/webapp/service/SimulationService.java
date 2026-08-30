@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import site.klade.simulation.Genome;
 import site.klade.simulation.SimulationSnapshotDto;
+import site.klade.webapp.config.SimulationProperties;
 import site.klade.webapp.entity.GenerationEntity;
 import site.klade.webapp.repository.GenerationRepository;
 import site.klade.webapp.simulation.Simulation;
@@ -26,13 +27,16 @@ public class SimulationService {
 
     private final ObjectMapper objectMapper;
 
+    private final SimulationProperties simulationProperties;
+
     private final AtomicBoolean saveInProgress = new AtomicBoolean(false);
 
-    public SimulationService(GenerationRepository generationRepository, ObjectMapper objectMapper) {
+    public SimulationService(GenerationRepository generationRepository, ObjectMapper objectMapper, SimulationProperties simulationProperties) {
         simulation = Simulation.withDefaultSettings();
         this.simulation.setOnGenerationComplete(this::saveGenerationSnapshot);
         this.generationRepository = generationRepository;
         this.objectMapper = objectMapper;
+        this.simulationProperties = simulationProperties;
     }
 
     public void start() {

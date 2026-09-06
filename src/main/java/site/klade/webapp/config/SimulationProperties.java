@@ -2,13 +2,31 @@ package site.klade.webapp.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import site.klade.simulation.ArenaSettings;
 
+/**
+ * Common project simulation settings, loaded from {@code simulation.yaml}
+ * (imported by application.yaml). All simulation-tuning values belong HERE —
+ * do not hardcode them in the simulation classes.
+ */
 @Data
-@Configuration
 @ConfigurationProperties(prefix = "simulation")
 public class SimulationProperties {
 
-    private float specimenMaxInitialDistance = 200f;
-    private float specimenMinInitialDistance = 150f;
+    private int speciesTotal = 3;
+
+    private int specimensPerSpecies = 10;
+
+    private int sleepPerUpdateMillis = 100;
+
+    /**
+     * Single arena battle settings (binds directly to simulation.arena.*).
+     */
+    private ArenaSettings arena = new ArenaSettings(
+            300f,
+            0.01f,
+            18f,
+            10f,
+            3000);
+
 }

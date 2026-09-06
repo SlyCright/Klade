@@ -1,8 +1,8 @@
 package site.klade.webapp.simulation;
 
 import site.klade.simulation.Arena;
+import site.klade.simulation.ArenaSettings;
 import site.klade.simulation.Genome;
-import site.klade.simulation.Species;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,15 +17,21 @@ public class EvolutionEngine {
 
     private final int specimensPerSpecies;
 
+    private final ArenaSettings arenaSettings;
+
     private final Random random = new Random();
 
-    public EvolutionEngine(int specimensPerSpecies) {
+    public EvolutionEngine(int specimensPerSpecies, ArenaSettings arenaSettings) {
         this.specimensPerSpecies = specimensPerSpecies;
+        this.arenaSettings = arenaSettings;
     }
 
     /**
      * Evaluates fitness of all genomes in the given species list by running them in an Arena.
      * The fitness values are set directly on the genome objects.
+     *
+     * FITNESS SEMANTICS: fitness = distance to the arena center, so LOWER = BETTER
+     * (see {@link FitnessStatistics} for the full explanation).
      */
     public void evaluateFitness(List<Species> allSpecies) {
         ArrayList<Genome> competitionPair = new ArrayList<>(2);
@@ -38,7 +44,7 @@ public class EvolutionEngine {
                         competitionPair.clear();
                         competitionPair.add(genomeI);
                         competitionPair.add(genomeJ);
-                        new Arena(competitionPair).run();
+                        new Arena(competitionPair, arenaSettings).run();
                     }
                 }
             }

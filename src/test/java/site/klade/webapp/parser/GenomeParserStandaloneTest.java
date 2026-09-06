@@ -18,7 +18,7 @@ public class GenomeParserStandaloneTest {
         System.out.println("genome = " + genome);
 
         assertThat(genome).isNotNull();
-        assertThat(genome.getMetaGenes()).isNotEmpty();
+        assertThat(genome.getMetaGenes()).isNotNull();
         assertThat(genome.getMorphogens()).isNotEmpty();
         assertThat(genome.getGenes()).isNotEmpty();
     }
@@ -44,7 +44,7 @@ public class GenomeParserStandaloneTest {
         Genome reparsed = parser.parse(serialized);
 
         assertThat(reparsed).isNotNull();
-        assertThat(reparsed.getMetaGenes()).hasSize(genome.getMetaGenes().size());
+        assertThat(reparsed.getMetaGenes()).isNotNull();
         assertThat(reparsed.getMorphogens()).hasSize(genome.getMorphogens().size());
         assertThat(reparsed.getGenes()).hasSize(genome.getGenes().size());
     }

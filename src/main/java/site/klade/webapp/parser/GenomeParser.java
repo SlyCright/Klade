@@ -2,6 +2,7 @@ package site.klade.webapp.parser;
 
 import site.klade.simulation.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -62,7 +63,7 @@ public class GenomeParser {
         }
 
         // Parse each section
-        List<MetaGene> metaGenes = parseMetaGenes(metaGeneLines);
+        MetaGenes metaGenes = parseMetaGenes(metaGeneLines);
         List<Morphogen> morphogens = parseMorphogens(morphogenLines);
         List<Gene> genes = parseGenes(geneLines);
 
@@ -85,9 +86,7 @@ public class GenomeParser {
         sb.append("\n");
         // Serialize Meta genes section
         sb.append("--- Meta genes\n");
-        for (MetaGene metaGene : genome.getMetaGenes()) {
-            sb.append(serializeMetaGene(metaGene)).append("\n");
-        }
+        sb.append(serializeMetaGenes(genome.getMetaGenes())).append("\n");
         sb.append("\n");
 
         // Serialize Morphogens section
@@ -106,19 +105,62 @@ public class GenomeParser {
         return sb.toString();
     }
 
-    private List<MetaGene> parseMetaGenes(List<String> lines) {
-        List<MetaGene> metaGenes = new ArrayList<>();
+    private MetaGenes parseMetaGenes(List<String> lines) {
+        MetaGenes metaGenes = new MetaGenes();
         for (String line : lines) {
-            // Format: Scale: 1.0
-            if (line.startsWith("Scale:")) {
-                String[] parts = line.split(":");
-                if (parts.length == 2) {
-                    float parameter = parseFloat(parts[1].trim());
-                    metaGenes.add(new MetaGene(MetaGeneType.SCALE, parameter));
+            // Format: FieldName: value (Type)
+            // Example: InitialAngle: 45.0 (Float)
+            String[] parts = line.split(":");
+            if (parts.length == 2) {
+                String fieldName = parts[0].trim();
+                String valuePart = parts[1].trim();
+                
+                // Remove type annotation if present
+                String value = valuePart;
+                int typeIndex = valuePart.indexOf("(");
+                if (typeIndex != -1) {
+                    value = valuePart.substring(0, typeIndex).trim();
+                }
+                
+                try {
+                    Field field = MetaGenes.class.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    Class<?> fieldType = field.getType();
+                    
+                    Object parsedValue = parseValue(value, fieldType);
+                    if (parsedValue != null) {
+                        field.set(metaGenes, parsedValue);
+                    }
+                } catch (NoSuchFieldException e) {
+                    // Skip unknown fields
+                    continue;
+                } catch (Exception e) {
+                    // Skip malformed lines
+                    continue;
                 }
             }
         }
         return metaGenes;
+    }
+    
+    private Object parseValue(String value, Class<?> type) {
+        try {
+            String normalized = value.replace(',', '.');
+            if (type == float.class || type == Float.class) {
+                return Float.parseFloat(normalized);
+            } else if (type == double.class || type == Double.class) {
+                return Double.parseDouble(normalized);
+            } else if (type == int.class || type == Integer.class) {
+                return Integer.parseInt(normalized);
+            } else if (type == boolean.class || type == Boolean.class) {
+                return Boolean.parseBoolean(normalized);
+            } else if (type == String.class) {
+                return value;
+            }
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return null;
     }
 
     private List<Morphogen> parseMorphogens(List<String> lines) {
@@ -150,36 +192,21 @@ public class GenomeParser {
         List<Gene> genes = new ArrayList<>();
         for (String line : lines) {
             // Format: if Mrph[1] < 1.0 become friction_node
-            // or: wait
+            // or: become friction_node (without condition)
+            // or: wait (action with no parameters)
             try {
-                if (line.equals("wait")) {
-                    genes.add(new Gene("", GeneAction.WAIT, ""));
-                } else if (line.startsWith("if ")) {
-                    // Parse conditional gene
-                    String conditionPart = line.substring(3).trim(); // Remove "if "
-
-                    // Find the action keyword
-                    String[] possibleActions = {"become", "lay_segment", "express"};
-                    String foundAction = null;
-                    int actionIndex = -1;
-
-                    for (String action : possibleActions) {
-                        int idx = conditionPart.indexOf(action);
-                        if (idx != -1) {
-                            foundAction = action;
-                            actionIndex = idx;
-                            break;
-                        }
-                    }
-
-                    if (foundAction != null && actionIndex > 0) {
-                        String condition = conditionPart.substring(0, actionIndex).trim();
-                        String rest = conditionPart.substring(actionIndex + foundAction.length()).trim();
-
-                        // Normalize action to enum
-                        GeneAction normalizedAction = normalizeAction(foundAction);
-                        genes.add(new Gene(condition, normalizedAction, rest));
-                    }
+                String lineToParse = line;
+                String condition = "";
+                
+                // Check for conditional "if" prefix
+                if (line.startsWith("if ")) {
+                    lineToParse = line.substring(3).trim(); // Remove "if "
+                }
+                
+                // Parse action and parameters
+                Gene gene = parseGeneLine(lineToParse, condition);
+                if (gene != null) {
+                    genes.add(gene);
                 }
             } catch (Exception e) {
                 // Skip malformed lines
@@ -188,10 +215,67 @@ public class GenomeParser {
         }
         return genes;
     }
+    
+    private Gene parseGeneLine(String line, String condition) {
+        // Get all possible actions from enum dynamically
+        GeneAction[] possibleActions = GeneAction.values();
+        
+        // Find which action appears in the line
+        for (GeneAction action : possibleActions) {
+            String actionName = action.name().toLowerCase();
+            int actionIndex = line.toLowerCase().indexOf(actionName);
+            
+            if (actionIndex != -1) {
+                // Extract parameters after the action
+                String parameters = line.substring(actionIndex + actionName.length()).trim();
+                
+                // For WAIT action, parameters should be empty
+                if (action == GeneAction.WAIT) {
+                    parameters = "";
+                }
+                
+                return new Gene(condition, action, parameters);
+            }
+        }
+        
+        return null; // No action found
+    }
 
-    private String serializeMetaGene(MetaGene metaGene) {
-        if (metaGene.getType() == MetaGeneType.SCALE) {
-            return "Scale: " + metaGene.getParameter();
+    private String serializeMetaGenes(MetaGenes metaGenes) {
+        StringBuilder sb = new StringBuilder();
+        Field[] fields = MetaGenes.class.getDeclaredFields();
+        
+        for (Field field : fields) {
+            try {
+                field.setAccessible(true);
+                String fieldName = field.getName();
+                Object value = field.get(metaGenes);
+                Class<?> fieldType = field.getType();
+                
+                if (value != null) {
+                    String typeAnnotation = getTypeAnnotation(fieldType);
+                    sb.append(fieldName).append(": ").append(value).append(" ").append(typeAnnotation).append("\n");
+                }
+            } catch (IllegalAccessException e) {
+                // Skip inaccessible fields
+                continue;
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    private String getTypeAnnotation(Class<?> type) {
+        if (type == float.class || type == Float.class) {
+            return "(Float)";
+        } else if (type == double.class || type == Double.class) {
+            return "(Double)";
+        } else if (type == int.class || type == Integer.class) {
+            return "(Integer)";
+        } else if (type == boolean.class || type == Boolean.class) {
+            return "(Boolean)";
+        } else if (type == String.class) {
+            return "(String)";
         }
         return "";
     }
@@ -205,25 +289,23 @@ public class GenomeParser {
     }
 
     private String serializeGene(Gene gene) {
+        String actionName = gene.getAction().name().toLowerCase();
+        
+        // For WAIT action, just output the action name
         if (gene.getAction() == GeneAction.WAIT) {
-            return "wait";
+            return actionName;
+        }
+        
+        // For other actions, include parameters
+        if (gene.getCondition() == null || gene.getCondition().isEmpty()) {
+            // Unconditional gene - no "if" prefix
+            return String.format("%s %s", actionName, gene.getParameters());
         } else {
-            return String.format("if %s %s %s",
-                    gene.getCondition(),
-                    gene.getAction().toString().toLowerCase(),
-                    gene.getParameters());
+            // Conditional gene with "if" prefix
+            return String.format("if %s %s %s", gene.getCondition(), actionName, gene.getParameters());
         }
     }
 
-    private GeneAction normalizeAction(String action) {
-        return switch (action.toLowerCase()) {
-            case "become" -> GeneAction.BECOME;
-            case "lay_segment" -> GeneAction.LAY_SEGMENT;
-            case "express" -> GeneAction.EXPRESS;
-            case "wait" -> GeneAction.WAIT;
-            default -> GeneAction.valueOf(action.toUpperCase());
-        };
-    }
 
     /**
      * Parses a float string in a locale-independent way, handling both comma and period decimal separators.

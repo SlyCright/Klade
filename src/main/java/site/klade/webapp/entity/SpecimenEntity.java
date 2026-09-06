@@ -10,24 +10,28 @@ public class SpecimenEntity {
 
     public static final String EXAMPLE_DNA = """
             --- Meta genes
-            Scale: 1.0
-
+            InitialAngle: 45.0 (Float)
+            
             --- Morphogens
             # Morphogen[id], [diffusion ratio], [decay ratio], [spreading conditions]
             Morphogen[1], 0.80, 0.1, everywhere
             Morphogen[2], 0.95, 0.2, up
-
+            
             --- Genes
             # [condition] [action] [parameters]
-            if Mrph[1] < 1.0 become friction_node
-            if Mrph[1] < 1.0 lay_segment 30°
-            if Mrph[1] < 1.0 express Mrph[1] 2.0
+            become friction_node
+            lay_segment 30°
+            express Mrph[1] 2.0
             wait
             wait
             if Mrph[1] > 1.0 become muscle
             if Mrph[1] > 1.0 become rhythm_node
             
-            #Possible commands:
+            # "if" statement can be omitted
+            # also "if" statement can be combined:
+            # Mrph[1] < 1.0 AND (Mrph[2] > 5.0 OR (Mrph[3] > 2.5)
+            
+            #Possible commands (for MVP):
             # become [node type] or [segment type]
             # lay_segment [angle] or [direction] (like "up" or "to center")
             # express [morphogen id] [amount]
@@ -55,4 +59,5 @@ public class SpecimenEntity {
         this.fitness = fitness;
         this.genome = genome;
     }
+
 }

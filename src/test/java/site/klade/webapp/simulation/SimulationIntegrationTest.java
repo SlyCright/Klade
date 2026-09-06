@@ -2,9 +2,8 @@ package site.klade.webapp.simulation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import site.klade.simulation.ArenaSettingsDto;
 import site.klade.simulation.Genome;
-import site.klade.simulation.SettingsDto;
-import site.klade.simulation.Species;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +16,8 @@ class SimulationIntegrationTest {
     @DisplayName("Given a simulation with default settings, when running multiple generations, then average fitness improves over time")
     void givenSimulationWithDefaultSettings_whenRunningMultipleGenerations_thenAverageFitnessImprovesOverTime() {
         // Given: a simulation with fast updates for testing
-        SettingsDto fastSettings = SettingsDto.builder()
-                .speciesTotal(2)
-                .specimensPerSpecies(5)
-                .sleepPerUpdateMillis(0)
-                .build();
-        
-        Simulation simulation = Simulation.with(fastSettings);
+        var arenaSettings = new ArenaSettingsDto(300f, 0.01f, 18f, 10f, 3000);
+        Simulation simulation = Simulation.with(2, 5, 0, arenaSettings);
         simulation.setOnGenerationComplete(snapshot -> {});
         
         List<Float> averageFitnesses = new ArrayList<>();

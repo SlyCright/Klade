@@ -2,10 +2,7 @@ package site.klade.webapp.simulation;
 
 import lombok.Getter;
 import lombok.Setter;
-import site.klade.simulation.DataTransferUtilities;
-import site.klade.simulation.SettingsDto;
-import site.klade.simulation.SimulationSnapshotDto;
-import site.klade.simulation.Species;
+import site.klade.simulation.ArenaSettings;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -26,10 +23,10 @@ public class Simulation {
     private final EvolutionEngine evolutionEngine;
 
     private final AtomicInteger generationNumber = new AtomicInteger(0);
-    // TODO: Use multithread pool in the future. Single thread is for the MVP to prevent complexity
-    //  of thread management
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    // TODO: Use multithread pool in the future. Single thread is for the MVP to prevent complexity
+    //  of thread management
 
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
@@ -41,20 +38,18 @@ public class Simulation {
     @Setter
     private Consumer<SimulationSnapshotDto> onGenerationComplete;
 
-    private Simulation(SettingsDto settings) {
-        this.SPECIES_TOTAL = settings.getSpeciesTotal();
-        this.SPECIMENS_PER_SPECIES = settings.getSpecimensPerSpecies();
-        this.SLEEP_PER_UPDATE_MILLIS = settings.getSleepPerUpdateMillis();
-        this.evolutionEngine = new EvolutionEngine(SPECIMENS_PER_SPECIES);
+    private Simulation(int speciesTotal, int specimensPerSpecies,
+                       int sleepPerUpdateMillis, ArenaSettings arenaSettings) {
+        this.SPECIES_TOTAL = speciesTotal;
+        this.SPECIMENS_PER_SPECIES = specimensPerSpecies;
+        this.SLEEP_PER_UPDATE_MILLIS = sleepPerUpdateMillis;
+        this.evolutionEngine = new EvolutionEngine(SPECIMENS_PER_SPECIES, arenaSettings);
         initialize();
     }
 
-    public static Simulation withDefaultSettings() {
-        return with(SettingsDto.builder().build());
-    }
-
-    public static Simulation with(SettingsDto settings) {
-        return new Simulation(settings);
+    public static Simulation with(int speciesTotal, int specimensPerSpecies,
+                                  int sleepPerUpdateMillis, ArenaSettings arenaSettings) {
+        return new Simulation(speciesTotal, specimensPerSpecies, sleepPerUpdateMillis, arenaSettings);
     }
 
     public void start() {
@@ -144,4 +139,5 @@ public class Simulation {
         }
         return false;
     }
+
 }

@@ -29,11 +29,12 @@ public class EvolutionEngine {
     /**
      * Evaluates fitness of all genomes in the given species list by running them in an Arena.
      * The fitness values are set directly on the genome objects.
-     *
+     * <p>
      * FITNESS SEMANTICS: fitness = distance to the arena center, so LOWER = BETTER
      * (see {@link FitnessStatistics} for the full explanation).
      */
     public void evaluateFitness(List<Species> allSpecies) {
+        resetFitnesses(allSpecies);
         ArrayList<Genome> competitionPair = new ArrayList<>(2);
         for (int speciesIndexI = 0; speciesIndexI < allSpecies.size(); speciesIndexI++) {
             for (int speciesIndexJ = speciesIndexI + 1; speciesIndexJ < allSpecies.size(); speciesIndexJ++) {
@@ -41,23 +42,28 @@ public class EvolutionEngine {
                 List<Genome> genomesJ = allSpecies.get(speciesIndexJ).getGenomes();
                 for (Genome genomeI : genomesI) {
                     for (Genome genomeJ : genomesJ) {
+                        genomeI.resetCurrentFitness();
+                        genomeJ.resetCurrentFitness();
                         competitionPair.clear();
                         competitionPair.add(genomeI);
                         competitionPair.add(genomeJ);
                         new Arena(competitionPair, arenaSettings).run();
+                        genomeI.updateAccumulatedFitness();
+                        genomeJ.updateAccumulatedFitness();
                     }
                 }
             }
         }
     }
 
-    /**
-     * Creates the next generation from the current one.
-     * Assumes that fitness has already been evaluated for all current genomes.
-     *
-     * @param currentSpecies the current generation's species list
-     * @return a new list of Species representing the next generation
-     */
+    private static void resetFitnesses(List<Species> allSpecies) {
+        for (Species species : allSpecies) {
+            for (Genome genome : species.getGenomes()) {
+                genome.resetFitnesses();
+            }
+        }
+    }
+
     public List<Species> getNextGeneration(List<Species> currentSpecies) {
         List<Species> nextSpecies = new ArrayList<>(currentSpecies.size());
         for (Species species : currentSpecies) {
@@ -65,7 +71,7 @@ public class EvolutionEngine {
             ArrayList<Genome> nextGenomes = new ArrayList<>(specimensPerSpecies);
             // Elitism: keep the single best genome unchanged
             Genome elite = currentGenomes.stream()
-                    .min(Comparator.comparingDouble(Genome::getFitness))
+                    .min(Comparator.comparingDouble(Genome::getAccumulatedFitness))
                     .orElse(currentGenomes.get(0));
             nextGenomes.add(new Genome(elite));
             // Fill the rest with mutated offspring from tournament selection
@@ -82,4 +88,5 @@ public class EvolutionEngine {
         }
         return nextSpecies;
     }
+
 }

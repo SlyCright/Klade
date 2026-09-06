@@ -2,7 +2,7 @@ package site.klade.webapp.simulation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import site.klade.simulation.ArenaSettingsDto;
+import site.klade.simulation.ArenaSettings;
 import site.klade.webapp.config.SimulationProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,7 +11,7 @@ public class SimulationTest {
 
     private Simulation simulationWithDefaults() {
         var props = new SimulationProperties();
-        return Simulation.with(
+        return new Simulation(
                 props.getSpeciesTotal(),
                 props.getSpecimensPerSpecies(),
                 props.getSleepPerUpdateMillis(),
@@ -37,9 +37,9 @@ public class SimulationTest {
     @Test
     void givenCustomSettings_whenWith_thenSimulationCreatedWithCustomValues() {
         // Given
-        var arenaSettings = new ArenaSettingsDto(300f, 0.01f, 18f, 10f, 3000);
+        var arenaSettings = new ArenaSettings(300f, 0.01f, 18f, 10f, 3000);
         // When
-        Simulation simulation = Simulation.with(5, 20, 200, arenaSettings);
+        Simulation simulation = new Simulation(5, 20, 200, arenaSettings);
         // Then
         assertThat(simulation).isNotNull();
         assertThat(simulation.SPECIES_TOTAL).isEqualTo(5);
@@ -53,7 +53,7 @@ public class SimulationTest {
         // Given
         Simulation simulation = simulationWithDefaults();
         // When
-        var snapshot = simulation.getSnapshot();
+        var snapshot = simulation.getGeneration();
         // Then
         assertThat(snapshot).isNotNull();
         assertThat(snapshot.getGenerationNumber()).isEqualTo(0);
@@ -64,8 +64,9 @@ public class SimulationTest {
     void givenSimulationNotRunning_whenRunCertainGenerations_thenGenerationsAdvanced() {
         // Given
         Simulation simulation = simulationWithDefaults();
-        simulation.setOnGenerationComplete(snapshot -> {});
-        int initialGen = simulation.getSnapshot().getGenerationNumber();
+        simulation.setOnGenerationComplete(snapshot -> {
+        });
+        int initialGen = simulation.getGeneration().getGenerationNumber();
         // When
         simulation.runCertainGenerations(3);
         try {
@@ -74,7 +75,7 @@ public class SimulationTest {
             throw new RuntimeException(e);
         }
         // Then
-        assertThat(simulation.getSnapshot().getGenerationNumber()).isEqualTo(initialGen + 2);
+        assertThat(simulation.getGeneration().getGenerationNumber()).isEqualTo(initialGen + 2);
     }
 
     @DisplayName("Given simulation advanced, when reset is called, then simulation is reset to initial state")
@@ -86,8 +87,8 @@ public class SimulationTest {
         // When
         simulation.reset();
         // Then
-        assertThat(simulation.getSnapshot().getGenerationNumber()).isEqualTo(0);
-        assertThat(simulation.getSnapshot().getSpeciesList()).isNotEmpty();
+        assertThat(simulation.getGeneration().getGenerationNumber()).isEqualTo(0);
+        assertThat(simulation.getGeneration().getSpeciesList()).isNotEmpty();
     }
 
     @DisplayName("Given simulation, when stop is called, then no exception is thrown")
@@ -124,4 +125,5 @@ public class SimulationTest {
         // To avoid hanging, stop immediately
         simulation.stop();
     }
+
 }

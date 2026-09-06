@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.klade.webapp.simulation.FitnessStatistics;
 import site.klade.webapp.simulation.Simulation;
-import site.klade.webapp.simulation.SimulationSnapshotDto;
+import site.klade.webapp.simulation.Generation;
 import site.klade.webapp.simulation.Species;
 
 // TODO: get rid of this class. Its logic should belong to GenerationPersistenceService. Do all calculations there
@@ -20,16 +20,16 @@ public class SimulationSnapshotService {
         this.simulation = lifecycleService.getSimulation();
     }
 
-    public SimulationSnapshotDto getSimulationSnapshot() {
-        return simulation.getSnapshot();
+    public Generation getSimulationSnapshot() {
+        return simulation.getGeneration();
     }
 
     /**
      * Human-readable one-screen status of the live simulation, used by the UI.
-     * Formerly lived in SimulationSnapshotDto.toString() — moved here so the DTO
+     * Formerly lived in Generation.toString() — moved here so the DTO
      * stays a pure data carrier (see the TODO resolution on that class).
      */
-    public String toStatusText(SimulationSnapshotDto snapshot) {
+    public String toStatusText(Generation snapshot) {
         int totalSpecimens = 0;
         float bestFitnessOverall = Float.MAX_VALUE; // lower = better; start from the "worst" sentinel
         float totalFitness = 0;

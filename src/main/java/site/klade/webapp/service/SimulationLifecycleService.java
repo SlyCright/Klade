@@ -1,12 +1,14 @@
 package site.klade.webapp.service;
 
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.klade.webapp.config.SimulationProperties;
 import site.klade.webapp.simulation.Simulation;
 
 @Slf4j
+@Getter
 @Service
 public class SimulationLifecycleService {
 
@@ -14,14 +16,17 @@ public class SimulationLifecycleService {
 
     public SimulationLifecycleService(GenerationPersistenceService persistenceService,
                                       SimulationProperties properties) {
-        // The configuration bean and this service live in the same Spring context,
-        // so the values are read directly from it (no DTO hand-off needed).
-        this.simulation = Simulation.with(
+        this.simulation = new Simulation(
                 properties.getSpeciesTotal(),
                 properties.getSpecimensPerSpecies(),
                 properties.getSleepPerUpdateMillis(),
                 properties.getArena());
         this.simulation.setOnGenerationComplete(persistenceService::saveGeneration);
+        log.info("Simulation initialized with {} species, {} specimens per species, and {} sleep per update.",
+                properties.getSpeciesTotal(),
+                properties.getSpecimensPerSpecies(),
+                properties.getSleepPerUpdateMillis());
+        this.simulation.runCertainGenerations(1);
     }
 
     public void start() {
@@ -40,12 +45,9 @@ public class SimulationLifecycleService {
         simulation.reset();
     }
 
-    public Simulation getSimulation() {
-        return simulation;
-    }
-
     @PreDestroy
     public void shutdown() {
         simulation.shutdown();
     }
+
 }

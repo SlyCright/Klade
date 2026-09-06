@@ -2,6 +2,7 @@ package site.klade.webapp.simulation;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import site.klade.simulation.ArenaSettings;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+@Slf4j
 public class Simulation {
 
     public final int SPECIES_TOTAL;
@@ -33,23 +35,30 @@ public class Simulation {
     private ArrayList<Species> speciesList = new ArrayList<>();
 
     @Getter
-    private volatile SimulationSnapshotDto snapshot;
+    private volatile Generation generation;
 
     @Setter
-    private Consumer<SimulationSnapshotDto> onGenerationComplete;
+    private Consumer<Generation> onGenerationComplete;
 
-    private Simulation(int speciesTotal, int specimensPerSpecies,
-                       int sleepPerUpdateMillis, ArenaSettings arenaSettings) {
+    public Simulation(
+            int speciesTotal,
+            int specimensPerSpecies,
+            int sleepPerUpdateMillis,
+            ArenaSettings arenaSettings
+    ) {
         this.SPECIES_TOTAL = speciesTotal;
         this.SPECIMENS_PER_SPECIES = specimensPerSpecies;
         this.SLEEP_PER_UPDATE_MILLIS = sleepPerUpdateMillis;
         this.evolutionEngine = new EvolutionEngine(SPECIMENS_PER_SPECIES, arenaSettings);
+        // TODO: check whether the DB has previous data, if so, load it. If not, initialize a new simulation
         initialize();
     }
 
-    public static Simulation with(int speciesTotal, int specimensPerSpecies,
-                                  int sleepPerUpdateMillis, ArenaSettings arenaSettings) {
-        return new Simulation(speciesTotal, specimensPerSpecies, sleepPerUpdateMillis, arenaSettings);
+    private void initialize() {
+        generationNumber.set(0);
+        speciesList.clear();
+        for (int i = 0; i < SPECIES_TOTAL; i++) speciesList.add(new Species(SPECIMENS_PER_SPECIES));
+        this.generation = new Generation(generationNumber.get(), GenerationCopier.getDeepCopyOf(speciesList));
     }
 
     public void start() {
@@ -96,35 +105,24 @@ public class Simulation {
         }
     }
 
-    private void initialize() {
-        generationNumber.set(0);
-        speciesList.clear();
-        for (int i = 0; i < SPECIES_TOTAL; i++) {
-            speciesList.add(new Species(SPECIMENS_PER_SPECIES));
-        }
-        this.snapshot = new SimulationSnapshotDto(
-                generationNumber.get(),
-                DataTransferUtilities.getDeepCopyOf(speciesList));
-    }
-
     private void update() {
         try {
             if (sleepInterrupted()) return;
             // 1. Evaluate fitness of current generation
             evolutionEngine.evaluateFitness(speciesList);
-            // 2. Capture snapshot (before creating next generation, so snapshot shows the current one)
-            this.snapshot = new SimulationSnapshotDto(
+            // 2. Capture generation snapshot (before creating next generation, so snapshot shows the current one)
+            this.generation = new Generation(
                     generationNumber.get(),
-                    DataTransferUtilities.getDeepCopyOf(speciesList));
+                    GenerationCopier.getDeepCopyOf(speciesList));
             if (onGenerationComplete == null) {
                 throw new IllegalStateException("onGenerationComplete callback must be set before running simulation");
             }
-            onGenerationComplete.accept(snapshot);
+            onGenerationComplete.accept(generation);
             // 3. Advance to next generation
             speciesList = new ArrayList<>(evolutionEngine.getNextGeneration(speciesList));
             generationNumber.incrementAndGet();
         } catch (Exception e) {
-            System.out.println("Simulation error: " + e.getMessage());
+            log.error("Simulation error: {}", e.getMessage(), e);
             isRunning.set(false);
         }
     }

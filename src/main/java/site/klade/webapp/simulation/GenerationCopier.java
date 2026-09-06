@@ -3,7 +3,7 @@ package site.klade.webapp.simulation;
 import site.klade.simulation.Genome;
 import java.util.ArrayList;
 
-public class DataTransferUtilities {
+public class GenerationCopier {
 
     public static ArrayList<Species> getDeepCopyOf(ArrayList<Species> speciesList) {
         var newSpeciesList = new ArrayList<Species>();

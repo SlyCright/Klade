@@ -10,17 +10,17 @@ import java.util.ArrayList;
  * display formatting in SimulationSnapshotService (service layer).
  */
 @Getter
-public class SimulationSnapshotDto {
+public class Generation {
 
     private int generationNumber;
 
     private ArrayList<Species> speciesList;
 
     // Add no-arg constructor for Jackson
-    public SimulationSnapshotDto() {
+    public Generation() {
     }
 
-    public SimulationSnapshotDto(int generationNumber, ArrayList<Species> speciesList) {
+    public Generation(int generationNumber, ArrayList<Species> speciesList) {
         this.generationNumber = generationNumber;
         this.speciesList = speciesList;
     }

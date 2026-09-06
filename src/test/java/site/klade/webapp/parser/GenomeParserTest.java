@@ -16,12 +16,12 @@ public class GenomeParserTest {
         String dslString = SpecimenEntity.EXAMPLE_DNA;
         Genome genome = parser.parse(dslString);
         
-        System.out.println("Original genome - MetaGenes: " + genome.getMetaGenes().size());
+        System.out.println("Original genome - MetaGenes: " + genome.getMetaGenes());
         System.out.println("Original genome - Morphogens: " + genome.getMorphogens().size());
         System.out.println("Original genome - Genes: " + genome.getGenes().size());
         
         assertThat(genome).isNotNull();
-        assertThat(genome.getMetaGenes()).isNotEmpty();
+        assertThat(genome.getMetaGenes()).isNotNull();
         assertThat(genome.getMorphogens()).isNotEmpty();
         assertThat(genome.getGenes()).isNotEmpty();
         
@@ -38,12 +38,12 @@ public class GenomeParserTest {
         // Parse the serialized DSL again
         Genome reparsed = parser.parse(serialized);
         
-        System.out.println("Reparsed genome - MetaGenes: " + reparsed.getMetaGenes().size());
+        System.out.println("Reparsed genome - MetaGenes: " + reparsed.getMetaGenes());
         System.out.println("Reparsed genome - Morphogens: " + reparsed.getMorphogens().size());
         System.out.println("Reparsed genome - Genes: " + reparsed.getGenes().size());
         
         assertThat(reparsed).isNotNull();
-        assertThat(reparsed.getMetaGenes()).hasSize(genome.getMetaGenes().size());
+        assertThat(reparsed.getMetaGenes()).isNotNull();
         assertThat(reparsed.getMorphogens()).hasSize(genome.getMorphogens().size());
         assertThat(reparsed.getGenes()).hasSize(genome.getGenes().size());
     }

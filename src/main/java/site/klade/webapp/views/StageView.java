@@ -13,7 +13,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
-import site.klade.webapp.service.SimulationService;
+import site.klade.webapp.service.SimulationLifecycleService;
+import site.klade.webapp.service.SimulationSnapshotService;
 
 @Slf4j
 @Route("stage")
@@ -35,12 +36,15 @@ public class StageView extends Div {
 
     private static final String CLASS_TEXT_COMMON = "stage-text-common";
 
-    private final SimulationService simulationService;
+    private final SimulationLifecycleService lifecycleService;
+
+    private final SimulationSnapshotService snapshotService;
 
     private Paragraph statusDisplay;
 
-    public StageView(SimulationService simulationService) {
-        this.simulationService = simulationService;
+    public StageView(SimulationLifecycleService lifecycleService, SimulationSnapshotService snapshotService) {
+        this.lifecycleService = lifecycleService;
+        this.snapshotService = snapshotService;
         structurePage();
         setupStyle();
         startPolling();
@@ -63,30 +67,30 @@ public class StageView extends Div {
                                 ),
                                 getButtonsLineWith(
                                         createActionButton("Start simulation", () -> {
-                                            simulationService.start();
+                                            lifecycleService.start();
                                             logToConsole("Server simulation started");
                                         }),
                                         // TODO: implement GUI for user so they can set desired
                                         //  amount of the generations to be run
                                         //  instead of the "1", "10", "100" buttons
                                         createActionButton("Run next 1 generations", () -> {
-                                            simulationService.runCertainGenerations(1);
+                                            lifecycleService.runCertainGenerations(1);
                                             logToConsole("Simulate 1 next generations");
                                         }),
                                         createActionButton("Run next 10 generations", () -> {
-                                            simulationService.runCertainGenerations(10);
+                                            lifecycleService.runCertainGenerations(10);
                                             logToConsole("Simulate 10 next generations");
                                         }),
                                         createActionButton("Run next 100 generations", () -> {
-                                            simulationService.runCertainGenerations(100);
+                                            lifecycleService.runCertainGenerations(100);
                                             logToConsole("Simulate 100 next generations");
                                         }),
                                         createActionButton("Stop simulation", () -> {
-                                            simulationService.stop();
+                                            lifecycleService.stop();
                                             logToConsole("Server simulation stopped");
                                         }),
                                         createActionButton("Reset simulation", () -> {
-                                            simulationService.reset();
+                                            lifecycleService.reset();
                                             logToConsole("Reset simulation");
                                         })
                                 )
@@ -167,8 +171,8 @@ public class StageView extends Div {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(1000);
-                    var dto = simulationService.getSimulationSnapshot();
-                    ui.access(() -> statusDisplay.setText(dto.toString()));
+                    var dto = snapshotService.getSimulationSnapshot();
+                    ui.access(() -> statusDisplay.setText(snapshotService.toStatusText(dto)));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;

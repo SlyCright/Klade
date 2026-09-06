@@ -1,12 +1,10 @@
 package site.klade.webapp.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -18,7 +16,6 @@ public class GenerationEntity {
 
     private Integer generationNumber;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
-    private String data;   // JSON representation of SimulationSnapshotDto
+    @OneToMany(mappedBy = "generation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SpeciesEntity> species = new ArrayList<>();
 }

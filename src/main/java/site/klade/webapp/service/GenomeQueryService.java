@@ -1,11 +1,11 @@
 package site.klade.webapp.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.klade.simulation.Genome;
-import site.klade.simulation.SimulationSnapshotDto;
 import site.klade.webapp.entity.GenerationEntity;
+import site.klade.webapp.entity.SpeciesEntity;
+import site.klade.webapp.entity.SpecimenEntity;
 import site.klade.webapp.repository.GenerationRepository;
 
 import java.util.ArrayList;
@@ -18,11 +18,8 @@ public class GenomeQueryService {
 
     private final GenerationRepository generationRepository;
 
-    private final ObjectMapper objectMapper;
-
-    public GenomeQueryService(GenerationRepository generationRepository, ObjectMapper objectMapper) {
+    public GenomeQueryService(GenerationRepository generationRepository) {
         this.generationRepository = generationRepository;
-        this.objectMapper = objectMapper;
     }
 
     public List<Genome> getBestGenomesPerSpecies() {
@@ -30,23 +27,25 @@ public class GenomeQueryService {
         if (entity == null) {
             return null;
         }
-        try {
-            SimulationSnapshotDto snapshot = objectMapper.readValue(
-                    entity.getData(), SimulationSnapshotDto.class);
-            List<Genome> bestGenomes = new ArrayList<>();
-            for (site.klade.simulation.Species species : snapshot.getSpeciesList()) {
-                Genome best = species.getGenomes().stream()
-                        .min(Comparator.comparingDouble(Genome::getFitness))
-                        .map(Genome::new)
-                        .orElse(null);
-                if (best != null) {
-                    bestGenomes.add(best);
-                }
+        
+        List<Genome> bestGenomes = new ArrayList<>();
+        
+        for (SpeciesEntity species : entity.getSpecies()) {
+            SpecimenEntity bestSpecimen = species.getSpecimens().stream()
+                    .min(Comparator.comparingDouble(SpecimenEntity::getFitness))
+                    .orElse(null);
+            
+            if (bestSpecimen != null && bestSpecimen.getGenome() != null) {
+                // Parse genome string back to Genome object
+                // Note: This assumes Genome has a constructor or factory method that can parse the string
+                // For now, return a placeholder or null since Genome parsing is not implemented
+                log.debug("Best genome for species {}: fitness={}, genome={}", 
+                        species.getSpeciesIndex(), bestSpecimen.getFitness(), bestSpecimen.getGenome());
+                // TODO: Implement Genome parsing from string representation
+                // bestGenomes.add(new Genome(bestSpecimen.getGenome()));
             }
-            return bestGenomes;
-        } catch (Exception e) {
-            log.error("Failed to parse saved generation", e);
-            return null;
         }
+        
+        return bestGenomes.isEmpty() ? null : bestGenomes;
     }
 }

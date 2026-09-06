@@ -2,11 +2,22 @@ package site.klade.webapp.simulation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import site.klade.simulation.SettingsDto;
+import site.klade.simulation.ArenaSettingsDto;
+import site.klade.webapp.config.SimulationProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimulationTest {
+
+    private Simulation simulationWithDefaults() {
+        var props = new SimulationProperties();
+        return Simulation.with(
+                props.getSpeciesTotal(),
+                props.getSpecimensPerSpecies(),
+                props.getSleepPerUpdateMillis(),
+                props.getArena()
+        );
+    }
 
     @DisplayName("Given no settings, when withDefaultSettings is called, then simulation is created with default values")
     @Test
@@ -14,7 +25,7 @@ public class SimulationTest {
         // Given
         // no preconditions
         // When
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         // Then
         assertThat(simulation).isNotNull();
         assertThat(simulation.SPECIES_TOTAL).isEqualTo(3);
@@ -26,13 +37,9 @@ public class SimulationTest {
     @Test
     void givenCustomSettings_whenWith_thenSimulationCreatedWithCustomValues() {
         // Given
-        SettingsDto settings = SettingsDto.builder()
-                .speciesTotal(5)
-                .specimensPerSpecies(20)
-                .sleepPerUpdateMillis(200)
-                .build();
+        var arenaSettings = new ArenaSettingsDto(300f, 0.01f, 18f, 10f, 3000);
         // When
-        Simulation simulation = Simulation.with(settings);
+        Simulation simulation = Simulation.with(5, 20, 200, arenaSettings);
         // Then
         assertThat(simulation).isNotNull();
         assertThat(simulation.SPECIES_TOTAL).isEqualTo(5);
@@ -44,7 +51,7 @@ public class SimulationTest {
     @Test
     void givenSimulationCreated_whenGetSnapShot_thenSnapshotReturned() {
         // Given
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         // When
         var snapshot = simulation.getSnapshot();
         // Then
@@ -56,7 +63,7 @@ public class SimulationTest {
     @Test
     void givenSimulationNotRunning_whenRunCertainGenerations_thenGenerationsAdvanced() {
         // Given
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         simulation.setOnGenerationComplete(snapshot -> {});
         int initialGen = simulation.getSnapshot().getGenerationNumber();
         // When
@@ -74,7 +81,7 @@ public class SimulationTest {
     @Test
     void givenSimulationAdvanced_whenReset_thenSimulationResetToInitialState() {
         // Given
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         simulation.runCertainGenerations(2); // advance
         // When
         simulation.reset();
@@ -87,7 +94,7 @@ public class SimulationTest {
     @Test
     void givenSimulation_whenStop_thenNoExceptionThrown() {
         // Given
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         // When
         // Then
         assertThat(simulation).isNotNull();
@@ -98,7 +105,7 @@ public class SimulationTest {
     @Test
     void givenSimulation_whenShutdown_thenNoExceptionThrown() {
         // Given
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         // When
         // Then
         assertThat(simulation).isNotNull();
@@ -109,7 +116,7 @@ public class SimulationTest {
     @Test
     void givenSimulation_whenStart_thenNoExceptionThrown() {
         // Given
-        Simulation simulation = Simulation.withDefaultSettings();
+        Simulation simulation = simulationWithDefaults();
         // When
         // Then
         assertThat(simulation).isNotNull();

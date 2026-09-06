@@ -1,3 +1,16 @@
 simulation:
-  specimen-max-initial-distance: 200f
-  specimen-min-initial-distance: 150f
+  # Common project simulation settings (loaded by SimulationProperties).
+  # All simulation-tuning values belong here — do not hardcode them in the code.
+
+  # Simulation-wide management settings
+  species-total: 3
+  specimens-per-species: 10
+  sleep-per-update-millis: 100
+
+  # Single arena battle settings (used by EvolutionEngine for every competition run)
+  arena:
+    initial-distance: 300.0
+    friction-factor: 0.01
+    node-size: 18.0
+    repulsion-factor: 10.0
+    max-ticks: 3000

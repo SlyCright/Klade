@@ -1,4 +1,4 @@
-package site.klade.webapp.controller;
+package site.klade.webapp.dto;
 
 import lombok.Getter;
 import lombok.Setter;

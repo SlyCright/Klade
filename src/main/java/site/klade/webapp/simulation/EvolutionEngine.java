@@ -64,29 +64,61 @@ public class EvolutionEngine {
         }
     }
 
+    /**
+     * Implements rank-linear reproduction operator (see: Рангово-линейный оператор репродукции и мутации.md).
+     * <p>
+     * This algorithm is unusual because it eliminates hyperparameters by tying reproduction strategy
+     * directly to rank in the fitness-sorted population:
+     * - Best genomes (rank 0.0): guaranteed mitosis (cloning) with zero mutation
+     * - Worst genomes (rank 1.0): guaranteed meiosis (recombination) with maximum mutation
+     * - Intermediate genomes: linearly interpolated probabilities between these extremes
+     * <p>
+     * This creates a self-adjusting evolutionary gradient where elites refine existing traits
+     * while outliers explore new solution spaces, automatically balancing exploitation vs exploration
+     * without manual parameter tuning.
+     */
     public List<Species> getNextGeneration(List<Species> currentSpecies) {
         List<Species> nextSpecies = new ArrayList<>(currentSpecies.size());
         for (Species species : currentSpecies) {
             List<Genome> currentGenomes = species.getGenomes();
+            // Sort by fitness (ascending - lower is better)
+            currentGenomes.sort(Comparator.comparingDouble(Genome::getAccumulatedFitness));
             ArrayList<Genome> nextGenomes = new ArrayList<>(specimensPerSpecies);
-            // Elitism: keep the single best genome unchanged
-            Genome elite = currentGenomes.stream()
-                    .min(Comparator.comparingDouble(Genome::getAccumulatedFitness))
-                    .orElse(currentGenomes.get(0));
-            nextGenomes.add(new Genome(elite));
-            // Fill the rest with mutated offspring from tournament selection
-//            for (int i = 0; i < specimensPerSpecies - 1; i++) {
-//                Genome candidate1 = currentGenomes.get(random.nextInt(currentGenomes.size()));
-//                Genome candidate2 = currentGenomes.get(random.nextInt(currentGenomes.size()));
-//                Genome winner = (candidate1.getFitness() < candidate2.getFitness())
-//                        ? candidate1
-//                        : candidate2;
-//                Genome offspring = Genome.getOffspringOf(winner);
-//                nextGenomes.add(offspring);
-//            }
+            int n = currentGenomes.size();
+            for (int i = 0; i < specimensPerSpecies; i++) {
+                Genome currentGenome = currentGenomes.get(i);
+                double rank = (double) i / (n - 1); // rank AKA mutationFactor
+                double mitosisProbability = 1.0 - rank;
+                Genome offspringGenome;
+                if (random.nextDouble() < mitosisProbability) {
+                    offspringGenome = mitosis(currentGenome, rank);
+                } else {
+                    offspringGenome = meiosis(currentGenome, currentGenomes, rank);
+                }
+                nextGenomes.add(offspringGenome);
+            }
             nextSpecies.add(new Species(nextGenomes));
         }
         return nextSpecies;
+    }
+
+    private Genome mitosis(Genome genome, double rank) {
+        return GenomeMutator.mutate(genome, rank);
+    }
+
+    private Genome meiosis(Genome currentGenome, List<Genome> genomes, double rank) {
+        Genome[] parents = tournamentSelect(currentGenome, genomes);
+        Genome offspring = GenomeCrossover.crossover(parents[0], parents[1]);
+        return GenomeMutator.mutate(offspring, rank);
+    }
+
+    private Genome[] tournamentSelect(Genome candidate1, List<Genome> genomes) {
+        Genome candidate2 = genomes.get(random.nextInt(genomes.size()));
+        Genome candidate3 = genomes.get(random.nextInt(genomes.size()));
+        // Select best 2 of 3 (lowest accumulated fitness)
+        Genome[] candidates = {candidate1, candidate2, candidate3};
+        java.util.Arrays.sort(candidates, Comparator.comparingDouble(Genome::getAccumulatedFitness));
+        return new Genome[]{candidates[0], candidates[1]};
     }
 
 }

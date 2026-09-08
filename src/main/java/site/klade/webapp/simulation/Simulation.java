@@ -44,12 +44,12 @@ public class Simulation {
             int speciesTotal,
             int specimensPerSpecies,
             int sleepPerUpdateMillis,
-            ArenaSettings arenaSettings
+            EvolutionEngine evolutionEngine
     ) {
         this.SPECIES_TOTAL = speciesTotal;
         this.SPECIMENS_PER_SPECIES = specimensPerSpecies;
         this.SLEEP_PER_UPDATE_MILLIS = sleepPerUpdateMillis;
-        this.evolutionEngine = new EvolutionEngine(SPECIMENS_PER_SPECIES, arenaSettings);
+        this.evolutionEngine = evolutionEngine;
         // TODO: check whether the DB has previous data, if so, load it. If not, initialize a new simulation
         initialize();
     }

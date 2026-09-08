@@ -7,6 +7,11 @@ simulation:
   specimens-per-species: 10
   sleep-per-update-millis: 100
 
+  # Base mutation chances (will be scaled by mutationFactor in rank-linear reproduction)
+  base-meta-gene-mutation-chance: 0.15
+  base-morphogen-mutation-chance: 0.15
+  base-gene-mutation-chance: 0.15
+
   # Single arena battle settings (used by EvolutionEngine for every competition run)
   arena:
     initial-distance: 300.0

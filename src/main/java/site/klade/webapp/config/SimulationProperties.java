@@ -20,6 +20,15 @@ public class SimulationProperties {
     private int sleepPerUpdateMillis = 100;
 
     /**
+     * Base mutation chances (will be scaled by mutationFactor in rank-linear reproduction).
+     */
+    private double baseMetaGeneMutationChance = 0.15;
+
+    private double baseMorphogenMutationChance = 0.15;
+
+    private double baseGeneMutationChance = 0.15;
+
+    /**
      * Single arena battle settings (binds directly to simulation.arena.*).
      */
     private ArenaSettings arena = new ArenaSettings(

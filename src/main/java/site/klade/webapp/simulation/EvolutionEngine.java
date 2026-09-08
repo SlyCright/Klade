@@ -21,9 +21,12 @@ public class EvolutionEngine {
 
     private final Random random = new Random();
 
-    public EvolutionEngine(int specimensPerSpecies, ArenaSettings arenaSettings) {
+    private final GenomeMutator genomeMutator;
+
+    public EvolutionEngine(int specimensPerSpecies, ArenaSettings arenaSettings, GenomeMutator genomeMutator) {
         this.specimensPerSpecies = specimensPerSpecies;
         this.arenaSettings = arenaSettings;
+        this.genomeMutator = genomeMutator;
     }
 
     /**
@@ -103,13 +106,13 @@ public class EvolutionEngine {
     }
 
     private Genome mitosis(Genome genome, double rank) {
-        return GenomeMutator.mutate(genome, rank);
+        return genomeMutator.mutate(genome, rank);
     }
 
     private Genome meiosis(Genome currentGenome, List<Genome> genomes, double rank) {
         Genome[] parents = tournamentSelect(currentGenome, genomes);
         Genome offspring = GenomeCrossover.crossover(parents[0], parents[1]);
-        return GenomeMutator.mutate(offspring, rank);
+        return genomeMutator.mutate(offspring, rank);
     }
 
     private Genome[] tournamentSelect(Genome candidate1, List<Genome> genomes) {

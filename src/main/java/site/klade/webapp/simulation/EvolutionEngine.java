@@ -105,8 +105,8 @@ public class EvolutionEngine {
         return nextSpecies;
     }
 
-    private Genome mitosis(Genome genome, double rank) {
-        return genomeMutator.mutate(genome, rank);
+    private Genome mitosis(Genome genome, double effective_rank) {
+        return genomeMutator.mutate(genome, effective_rank);
     }
 
     private Genome meiosis(Genome currentGenome, List<Genome> genomes, double rank) {

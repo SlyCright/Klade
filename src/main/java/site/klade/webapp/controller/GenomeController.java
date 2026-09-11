@@ -25,22 +25,19 @@ public class GenomeController {
     public GenomesDto getBestGenome() {
         List<Genome> bestGenomes = genomeQueryService.getBestGenomesPerSpecies();
         if (bestGenomes == null) {
-            // Return a minimal placeholder or null; client will handle it.
             return null;
         }
         List<GenomeDto> genomeDtos = new ArrayList<>();
         int speciesIndex = 0;
-//        for (Genome best : bestGenomes) {
-//            genomeDtos.add(new GenomeDto(
-//                best.getStartPosition().x,
-//                best.getStartPosition().y,
-//                best.getInitialImpulse().x,
-//                best.getInitialImpulse().y,
-//                best.getFitness(),
-//                speciesIndex
-//            ));
-//            speciesIndex++;
-//        }
+        for (Genome best : bestGenomes) {
+            genomeDtos.add(new GenomeDto(
+                best.getInitialAngle(),
+                best.getAccumulatedFitness(),
+                speciesIndex,
+                null // genomeDsl can be added later if needed
+            ));
+            speciesIndex++;
+        }
         return new GenomesDto(genomeDtos);
     }
 }

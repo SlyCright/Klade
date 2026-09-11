@@ -3,7 +3,6 @@ package site.klade.webapp.simulation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import site.klade.simulation.ArenaSettings;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;

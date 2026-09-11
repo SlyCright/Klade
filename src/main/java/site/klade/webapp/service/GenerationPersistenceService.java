@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.klade.simulation.Genome;
 import site.klade.webapp.entity.GenerationEntity;
 import site.klade.webapp.entity.SpeciesEntity;
 import site.klade.webapp.entity.SpecimenEntity;
@@ -13,7 +14,6 @@ import site.klade.webapp.repository.SpeciesRepository;
 import site.klade.webapp.repository.SpecimenRepository;
 import site.klade.webapp.simulation.Generation;
 import site.klade.webapp.simulation.Species;
-import site.klade.simulation.Genome;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,17 +31,19 @@ public class GenerationPersistenceService {
 
     private final SpecimenRepository specimenRepository;
 
-    private final GenomeParser genomeParser = new GenomeParser();
+    private final GenomeParser genomeParser;
 
     private final AtomicBoolean saveInProgress = new AtomicBoolean(false);
 
     public GenerationPersistenceService(
             GenerationRepository generationRepository,
             SpeciesRepository speciesRepository,
-            SpecimenRepository specimenRepository) {
+            SpecimenRepository specimenRepository,
+            GenomeParser genomeParser) {
         this.generationRepository = generationRepository;
         this.speciesRepository = speciesRepository;
         this.specimenRepository = specimenRepository;
+        this.genomeParser = genomeParser;
     }
 
     /**

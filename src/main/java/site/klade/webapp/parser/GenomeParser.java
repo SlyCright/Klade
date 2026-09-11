@@ -1,5 +1,6 @@
 package site.klade.webapp.parser;
 
+import org.springframework.stereotype.Component;
 import site.klade.simulation.*;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.util.Locale;
  * Parser for converting between DSL string format and Genome objects.
  * Handles the genome DSL format with sections for Meta genes, Morphogens, and Genes.
  */
+@Component
 public class GenomeParser {
 
     /**

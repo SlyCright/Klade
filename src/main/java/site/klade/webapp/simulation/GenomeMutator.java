@@ -16,9 +16,6 @@ public class GenomeMutator {
 
     private final Random random = new Random();
 
-    public GenomeMutator() {
-    }
-
     /**
      * Applies mutations to a genome based on the given rank.
      * Hyper-gene is mutated first, then the updated value is used for subsequent mutations

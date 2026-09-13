@@ -202,7 +202,9 @@ public class GenomeParser {
             try {
                 String lineToParse = line;
                 String condition = "";
-                
+                // TODO: fix: for now it silently drops `if` conditions. `condition` is never extracted, always `""`
+                //  (parser half-implemented)
+
                 // Check for conditional "if" prefix
                 if (line.startsWith("if ")) {
                     lineToParse = line.substring(3).trim(); // Remove "if "
@@ -249,7 +251,8 @@ public class GenomeParser {
     private String serializeMetaGenes(MetaGenes metaGenes) {
         StringBuilder sb = new StringBuilder();
         Field[] fields = MetaGenes.class.getDeclaredFields();
-        
+        // Just to note: `getDeclaredFields()` does not guarantee order — serialized DSL field order is JVM-dependent
+
         for (Field field : fields) {
             try {
                 field.setAccessible(true);

@@ -19,9 +19,7 @@ public class Species {
     }
 
     public Species(int specimensPerSpecies, float initialHyperGene) {
-        for (int i = 0; i < specimensPerSpecies; i++) {
-            genomes.add(new Genome(initialHyperGene));
-        }
+        for (int i = 0; i < specimensPerSpecies; i++) genomes.add(new Genome(initialHyperGene));
     }
 
     public Species(ArrayList<Genome> genomes) {

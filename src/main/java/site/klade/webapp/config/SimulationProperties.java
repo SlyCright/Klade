@@ -28,9 +28,9 @@ public class SimulationProperties {
 
     private double baseGeneMutationChance = 0.15;
 
-    /**
-     * Single arena battle settings (binds directly to simulation.arena.*).
-     */
+    // TODO: ArenaSettings immutable (no setters) — Spring may silently ignore YAML.
+    //  CHECK: change YAML, restart, GET /api/arena-settings; if unchanged, binding silently fails.
+
     private ArenaSettings arena = new ArenaSettings(
             300f,
             0.01f,

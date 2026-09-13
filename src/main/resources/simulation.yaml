@@ -13,6 +13,10 @@ simulation:
   base-gene-mutation-chance: 0.15
 
   # Single arena battle settings (used by EvolutionEngine for every competition run)
+
+  # TODO: ArenaSettings immutable (no setters) — Spring may silently ignore YAML.
+  #  CHECK: change YAML, restart, GET /api/arena-settings; if unchanged, binding silently fails.
+
   arena:
     initial-distance: 300.0
     friction-factor: 0.01

@@ -26,22 +26,17 @@ public class GenomeParser {
         if (dslString == null || dslString.trim().isEmpty()) {
             throw new IllegalArgumentException("DSL string cannot be null or empty");
         }
-
         String[] lines = dslString.split("\n");
         List<String> metaGeneLines = new ArrayList<>();
         List<String> morphogenLines = new ArrayList<>();
         List<String> geneLines = new ArrayList<>();
-
         Section currentSection = Section.NONE;
-
         for (String line : lines) {
             String trimmedLine = line.trim();
-
             // Skip empty lines and comments
             if (trimmedLine.isEmpty() || trimmedLine.startsWith("#")) {
                 continue;
             }
-
             // Check for section headers
             if (trimmedLine.equals("--- Meta genes")) {
                 currentSection = Section.META_GENES;
@@ -53,7 +48,6 @@ public class GenomeParser {
                 currentSection = Section.GENES;
                 continue;
             }
-
             // Add line to current section
             switch (currentSection) {
                 case META_GENES -> metaGeneLines.add(trimmedLine);
@@ -63,14 +57,11 @@ public class GenomeParser {
                 } // Lines before first section are ignored
             }
         }
-
         // Parse each section
         MetaGenes metaGenes = parseMetaGenes(metaGeneLines);
         List<Morphogen> morphogens = parseMorphogens(morphogenLines);
         List<Gene> genes = parseGenes(geneLines);
-
-        Genome genome = new Genome(metaGenes, morphogens, genes);
-        return genome;
+        return new Genome(metaGenes, morphogens, genes);
     }
 
     /**
@@ -83,28 +74,23 @@ public class GenomeParser {
         if (genome == null) {
             throw new IllegalArgumentException("Genome cannot be null");
         }
-
         StringBuilder sb = new StringBuilder();
-
         sb.append("\n");
         // Serialize Meta genes section
         sb.append("--- Meta genes\n");
         sb.append(serializeMetaGenes(genome.getMetaGenes())).append("\n");
         sb.append("\n");
-
         // Serialize Morphogens section
         sb.append("--- Morphogens\n");
         for (Morphogen morphogen : genome.getMorphogens()) {
             sb.append(serializeMorphogen(morphogen)).append("\n");
         }
         sb.append("\n");
-
         // Serialize Genes section
         sb.append("--- Genes\n");
         for (Gene gene : genome.getGenes()) {
             sb.append(serializeGene(gene)).append("\n");
         }
-
         return sb.toString();
     }
 
@@ -117,19 +103,16 @@ public class GenomeParser {
             if (parts.length == 2) {
                 String fieldName = parts[0].trim();
                 String valuePart = parts[1].trim();
-                
                 // Remove type annotation if present
                 String value = valuePart;
                 int typeIndex = valuePart.indexOf("(");
                 if (typeIndex != -1) {
                     value = valuePart.substring(0, typeIndex).trim();
                 }
-                
                 try {
                     Field field = MetaGenes.class.getDeclaredField(fieldName);
                     field.setAccessible(true);
                     Class<?> fieldType = field.getType();
-                    
                     Object parsedValue = parseValue(value, fieldType);
                     if (parsedValue != null) {
                         field.set(metaGenes, parsedValue);
@@ -145,7 +128,7 @@ public class GenomeParser {
         }
         return metaGenes;
     }
-    
+
     private Object parseValue(String value, Class<?> type) {
         try {
             String normalized = value.replace(',', '.');
@@ -176,11 +159,9 @@ public class GenomeParser {
                     // Parse id from Morphogen[id]
                     String idPart = parts[0].trim();
                     int id = Integer.parseInt(idPart.substring(idPart.indexOf('[') + 1, idPart.indexOf(']')));
-
                     float diffusionRatio = parseFloat(parts[1].trim());
                     float decayRatio = parseFloat(parts[2].trim());
                     String spreadingConditions = parts[3].trim();
-
                     morphogens.add(new Morphogen(id, diffusionRatio, decayRatio, spreadingConditions));
                 }
             } catch (Exception e) {
@@ -202,12 +183,10 @@ public class GenomeParser {
                 String condition = "";
                 // TODO: fix: for now it silently drops `if` conditions. `condition` is never extracted, always `""`
                 //  (parser half-implemented)
-
                 // Check for conditional "if" prefix
                 if (line.startsWith("if ")) {
                     lineToParse = line.substring(3).trim(); // Remove "if "
                 }
-                
                 // Parse action and parameters
                 Gene gene = parseGeneLine(lineToParse, condition);
                 if (gene != null) {
@@ -220,29 +199,24 @@ public class GenomeParser {
         }
         return genes;
     }
-    
+
     private Gene parseGeneLine(String line, String condition) {
         // Get all possible actions from enum dynamically
         GeneAction[] possibleActions = GeneAction.values();
-        
         // Find which action appears in the line
         for (GeneAction action : possibleActions) {
             String actionName = action.name().toLowerCase();
             int actionIndex = line.toLowerCase().indexOf(actionName);
-            
             if (actionIndex != -1) {
                 // Extract parameters after the action
                 String parameters = line.substring(actionIndex + actionName.length()).trim();
-                
                 // For WAIT action, parameters should be empty
                 if (action == GeneAction.WAIT) {
                     parameters = "";
                 }
-                
                 return new Gene(condition, action, parameters);
             }
         }
-        
         return null; // No action found
     }
 
@@ -250,14 +224,12 @@ public class GenomeParser {
         StringBuilder sb = new StringBuilder();
         Field[] fields = MetaGenes.class.getDeclaredFields();
         // Just to note: `getDeclaredFields()` does not guarantee order — serialized DSL field order is JVM-dependent
-
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
                 String fieldName = field.getName();
                 Object value = field.get(metaGenes);
                 Class<?> fieldType = field.getType();
-                
                 if (value != null) {
                     String typeAnnotation = getTypeAnnotation(fieldType);
                     sb.append(fieldName).append(": ").append(value).append(" ").append(typeAnnotation).append("\n");
@@ -267,10 +239,9 @@ public class GenomeParser {
                 continue;
             }
         }
-        
         return sb.toString();
     }
-    
+
     private String getTypeAnnotation(Class<?> type) {
         if (type == float.class || type == Float.class) {
             return "(Float)";
@@ -296,12 +267,10 @@ public class GenomeParser {
 
     private String serializeGene(Gene gene) {
         String actionName = gene.getAction().name().toLowerCase();
-        
         // For WAIT action, just output the action name
         if (gene.getAction() == GeneAction.WAIT) {
             return actionName;
         }
-        
         // For other actions, include parameters
         if (gene.getCondition() == null || gene.getCondition().isEmpty()) {
             // Unconditional gene - no "if" prefix
@@ -311,7 +280,6 @@ public class GenomeParser {
             return String.format("if %s %s %s", gene.getCondition(), actionName, gene.getParameters());
         }
     }
-
 
     /**
      * Parses a float string in a locale-independent way, handling both comma and period decimal separators.
@@ -325,4 +293,5 @@ public class GenomeParser {
     private enum Section {
         NONE, META_GENES, MORPHOGENS, GENES
     }
+
 }

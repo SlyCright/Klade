@@ -109,7 +109,7 @@ public class GenomeParser {
     }
 
     private MetaGenes parseMetaGenes(List<String> lines) {
-        MetaGenes metaGenes = new MetaGenes(0.0f);
+        MetaGenes metaGenes = new MetaGenes();
         for (String line : lines) {
             // Format: FieldName: value (Type)
             // Example: InitialAngle: 45.0 (Float)

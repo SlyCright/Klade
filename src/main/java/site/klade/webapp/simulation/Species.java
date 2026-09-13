@@ -26,6 +26,16 @@ public class Species {
         this.genomes.addAll(genomes);
     }
 
+    /**
+     * Copy constructor: carries the already-calculated fitness statistics (may be
+     * {@code null} when not evaluated — kept as-is, no recomputation).
+     */
+    public Species(ArrayList<Genome> genomes, Double averageFitness, Double bestFitness) {
+        this.genomes.addAll(genomes);
+        this.averageFitness = averageFitness;
+        this.bestFitness = bestFitness;
+    }
+
     public void calculateFitnessStatistics() {
         FitnessStatistics stats = FitnessStatistics.of(genomes);
         if (stats.getCount() > 0) {

@@ -56,6 +56,11 @@ public class EvolutionEngine {
                 }
             }
         }
+        // Fitness statistics are computed here, right after evaluation, so that the
+        // generation snapshot (and therefore DB persistence) carries them.
+        for (Species species : allSpecies) {
+            species.calculateFitnessStatistics();
+        }
     }
 
     /**

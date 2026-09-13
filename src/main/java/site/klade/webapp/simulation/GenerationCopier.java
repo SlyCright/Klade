@@ -12,7 +12,11 @@ public class GenerationCopier {
             for (Genome genomeToBeCopied : speciesToBeCopied.getGenomes()) {
                 genomes.add(new Genome(genomeToBeCopied));
             }
-            newSpeciesList.add(new Species(genomes));
+            // Statistics were already calculated on the source (EvolutionEngine after
+            // evaluateFitness); copy them instead of recomputing. Null stays null.
+            newSpeciesList.add(new Species(genomes,
+                    speciesToBeCopied.getAverageFitness(),
+                    speciesToBeCopied.getBestFitness()));
         }
         return newSpeciesList;
     }

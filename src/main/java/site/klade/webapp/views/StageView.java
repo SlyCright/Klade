@@ -13,8 +13,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import site.klade.webapp.service.GenomeQueryService;
 import site.klade.webapp.service.SimulationLifecycleService;
-import site.klade.webapp.service.SimulationSnapshotService;
+import site.klade.webapp.service.SpeciesStats;
+
+import java.util.List;
 
 @Slf4j
 @Route("stage")
@@ -36,15 +39,17 @@ public class StageView extends Div {
 
     private static final String CLASS_TEXT_COMMON = "stage-text-common";
 
+    private static final int POLL_INTERVAL_MILLIS = 1000;
+
     private final SimulationLifecycleService lifecycleService;
 
-    private final SimulationSnapshotService snapshotService;
+    private final GenomeQueryService genomeQueryService;
 
     private Paragraph statusDisplay;
 
-    public StageView(SimulationLifecycleService lifecycleService, SimulationSnapshotService snapshotService) {
+    public StageView(SimulationLifecycleService lifecycleService, GenomeQueryService genomeQueryService) {
         this.lifecycleService = lifecycleService;
-        this.snapshotService = snapshotService;
+        this.genomeQueryService = genomeQueryService;
         structurePage();
         setupStyle();
         startPolling();
@@ -164,25 +169,63 @@ public class StageView extends Div {
         addClassName(CLASS_FULL_SIZE);
     }
 
-    @SuppressWarnings("BusyWait")
+    /**
+     * Uses Vaadin's built-in client polling instead of a hand-rolled thread: poll
+     * requests arrive on the UI session thread, so no {@code ui.access()} coordination
+     * is needed, and a failed poll cannot permanently kill the update loop.
+     */
     private void startPolling() {
         UI ui = UI.getCurrent();
-        Thread pollingThread = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    Thread.sleep(1000);
-                    var dto = snapshotService.getSimulationSnapshot();
-                    ui.access(() -> statusDisplay.setText(snapshotService.toStatusText(dto)));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                } catch (Exception e) {
-                    break;
-                }
+        ui.setPollInterval(POLL_INTERVAL_MILLIS);
+        ui.addPollListener(event -> {
+            try {
+                statusDisplay.setText(buildStatusText(genomeQueryService.getSpeciesStatistics()));
+            } catch (Exception e) {
+                log.warn("Failed to refresh simulation status", e);
             }
-            ui.access(() -> statusDisplay.setText("---"));
-        }, "simulation-polling-thread");
-        pollingThread.setDaemon(true);
-        pollingThread.start();
+        });
+    }
+
+    /**
+     * Presentation-only formatting of the persisted per-species statistics.
+     * Fitness semantics: LOWER = BETTER (distance to the arena center);
+     * {@code null} means "nothing evaluated" and is shown as N/A.
+     */
+    private String buildStatusText(@NonNull List<SpeciesStats> statsList) {
+        if (statsList.isEmpty()) {
+            return "No persisted generation yet — start the simulation.";
+        }
+        int totalSpecimens = 0;
+        double bestOverall = Double.MAX_VALUE;
+        double totalFitness = 0;
+        int fitnessCount = 0;
+        StringBuilder speciesLines = new StringBuilder();
+
+        for (SpeciesStats stats : statsList) {
+            totalSpecimens += stats.specimenCount();
+            if (stats.bestFitness() != null && stats.bestFitness() < bestOverall) {
+                bestOverall = stats.bestFitness();
+            }
+            if (stats.averageFitness() != null) {
+                totalFitness += stats.averageFitness();
+                fitnessCount++;
+            }
+            speciesLines.append("\n  Species[").append(stats.speciesIndex())
+                    .append("]: specimens=").append(stats.specimenCount())
+                    .append(", bestFitness=").append(formatFitness(stats.bestFitness()))
+                    .append(", avgFitness=").append(formatFitness(stats.averageFitness()));
+        }
+
+        double avgOverall = fitnessCount > 0 ? totalFitness / fitnessCount : Double.MAX_VALUE;
+
+        return "Persisted generation: species=" + statsList.size()
+                + ", totalSpecimens=" + totalSpecimens
+                + ", bestFitness=" + formatFitness(bestOverall == Double.MAX_VALUE ? null : bestOverall)
+                + ", avgFitness=" + formatFitness(avgOverall == Double.MAX_VALUE ? null : avgOverall)
+                + speciesLines;
+    }
+
+    private String formatFitness(Double fitness) {
+        return fitness == null ? "N/A" : String.valueOf(Math.round(fitness * 100) / 100.0);
     }
 }

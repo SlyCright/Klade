@@ -16,18 +16,7 @@ public class GenomeMutator {
 
     private final Random random = new Random();
 
-    private final double baseMetaGeneMutationChance;
-
-    private final double baseMorphogenMutationChance;
-
-    private final double baseGeneMutationChance;
-
-    public GenomeMutator(double baseMetaGeneMutationChance,
-                         double baseMorphogenMutationChance,
-                         double baseGeneMutationChance) {
-        this.baseMetaGeneMutationChance = baseMetaGeneMutationChance;
-        this.baseMorphogenMutationChance = baseMorphogenMutationChance;
-        this.baseGeneMutationChance = baseGeneMutationChance;
+    public GenomeMutator() {
     }
 
     /**

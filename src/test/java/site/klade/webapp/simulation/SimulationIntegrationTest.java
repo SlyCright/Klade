@@ -17,7 +17,9 @@ class SimulationIntegrationTest {
     void givenSimulationWithDefaultSettings_whenRunningMultipleGenerations_thenAverageFitnessImprovesOverTime() {
         // Given: a simulation with fast updates for testing
         var arenaSettings = new ArenaSettings(300f, 0.01f, 18f, 10f, 3000);
-        Simulation simulation = new Simulation(2, 5, 0, arenaSettings);
+        GenomeMutator genomeMutator = new GenomeMutator();
+        EvolutionEngine evolutionEngine = new EvolutionEngine(5, arenaSettings, genomeMutator);
+        Simulation simulation = new Simulation(2, 5, 0, evolutionEngine, 1.0f);
         simulation.setOnGenerationComplete(snapshot -> {
         });
         List<Float> averageFitnesses = new ArrayList<>();

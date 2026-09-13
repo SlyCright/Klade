@@ -23,6 +23,8 @@ public class Simulation {
 
     private final EvolutionEngine evolutionEngine;
 
+    private final float initialHyperGene;
+
     private final AtomicInteger generationNumber = new AtomicInteger(0);
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -43,12 +45,14 @@ public class Simulation {
             int speciesTotal,
             int specimensPerSpecies,
             int sleepPerUpdateMillis,
-            EvolutionEngine evolutionEngine
+            EvolutionEngine evolutionEngine,
+            float initialHyperGene
     ) {
         this.SPECIES_TOTAL = speciesTotal;
         this.SPECIMENS_PER_SPECIES = specimensPerSpecies;
         this.SLEEP_PER_UPDATE_MILLIS = sleepPerUpdateMillis;
         this.evolutionEngine = evolutionEngine;
+        this.initialHyperGene = initialHyperGene;
         // TODO: check whether the DB has previous data, if so, load it. If not, initialize a new simulation
         initialize();
     }
@@ -56,7 +60,7 @@ public class Simulation {
     private void initialize() {
         generationNumber.set(0);
         speciesList.clear();
-        for (int i = 0; i < SPECIES_TOTAL; i++) speciesList.add(new Species(SPECIMENS_PER_SPECIES));
+        for (int i = 0; i < SPECIES_TOTAL; i++) speciesList.add(new Species(SPECIMENS_PER_SPECIES, initialHyperGene));
         this.generation = new Generation(generationNumber.get(), GenerationCopier.getDeepCopyOf(speciesList));
     }
 

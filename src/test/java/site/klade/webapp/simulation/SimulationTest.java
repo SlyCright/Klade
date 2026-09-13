@@ -11,11 +11,17 @@ public class SimulationTest {
 
     private Simulation simulationWithDefaults() {
         var props = new SimulationProperties();
+        GenomeMutator genomeMutator = new GenomeMutator();
+        EvolutionEngine evolutionEngine = new EvolutionEngine(
+                props.getSpecimensPerSpecies(),
+                props.getArena(),
+                genomeMutator);
         return new Simulation(
                 props.getSpeciesTotal(),
                 props.getSpecimensPerSpecies(),
                 props.getSleepPerUpdateMillis(),
-                props.getArena()
+                evolutionEngine,
+                props.getInitialHyperGene()
         );
     }
 
@@ -39,7 +45,9 @@ public class SimulationTest {
         // Given
         var arenaSettings = new ArenaSettings(300f, 0.01f, 18f, 10f, 3000);
         // When
-        Simulation simulation = new Simulation(5, 20, 200, arenaSettings);
+        GenomeMutator genomeMutator = new GenomeMutator();
+        EvolutionEngine evolutionEngine = new EvolutionEngine(20, arenaSettings, genomeMutator);
+        Simulation simulation = new Simulation(5, 20, 200, evolutionEngine, 1.0f);
         // Then
         assertThat(simulation).isNotNull();
         assertThat(simulation.SPECIES_TOTAL).isEqualTo(5);

@@ -69,7 +69,10 @@ public class GenomeParser {
         List<Morphogen> morphogens = parseMorphogens(morphogenLines);
         List<Gene> genes = parseGenes(geneLines);
 
-        return new Genome(metaGenes, morphogens, genes);
+        Genome genome = new Genome(metaGenes.getHyperGene());
+        genome.getMorphogens().addAll(morphogens);
+        genome.getGenes().addAll(genes);
+        return genome;
     }
 
     /**
@@ -108,7 +111,7 @@ public class GenomeParser {
     }
 
     private MetaGenes parseMetaGenes(List<String> lines) {
-        MetaGenes metaGenes = new MetaGenes();
+        MetaGenes metaGenes = new MetaGenes(0.0f);
         for (String line : lines) {
             // Format: FieldName: value (Type)
             // Example: InitialAngle: 45.0 (Float)

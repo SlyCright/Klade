@@ -20,13 +20,11 @@ public class SimulationProperties {
     private int sleepPerUpdateMillis = 100;
 
     /**
-     * Base mutation chances (will be scaled by mutationFactor in rank-linear reproduction).
+     * Initial hyper-gene value (R_max) for generation-0 genomes.
+     * Controls the starting mutation intensity before self-adaptation kicks in.
+     * Domain: (0, 1].
      */
-    private double baseMetaGeneMutationChance = 0.15;
-
-    private double baseMorphogenMutationChance = 0.15;
-
-    private double baseGeneMutationChance = 0.15;
+    private float initialHyperGene = 1.0f;
 
     // TODO: ArenaSettings immutable (no setters) — Spring may silently ignore YAML.
     //  CHECK: change YAML, restart, GET /api/arena-settings; if unchanged, binding silently fails.

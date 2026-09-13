@@ -7,12 +7,11 @@ simulation:
   specimens-per-species: 10
   sleep-per-update-millis: 100
 
-  # Base mutation chances (will be scaled by mutationFactor in rank-linear reproduction)
-  base-meta-gene-mutation-chance: 0.15
-  base-morphogen-mutation-chance: 0.15
-  base-gene-mutation-chance: 0.15
+  # Initial hyper-gene value for generation 0 genomes (R_max, domain: (0, 1]).
+  # Controls the starting mutation intensity before self-adaptation kicks in.
+  initial-hyper-gene: 1.0
 
-  # Single arena battle settings (used by EvolutionEngine for every competition run)
+  # Single arena battle settings (used for simulation inside Arena for every competition run)
 
   # TODO: ArenaSettings immutable (no setters) — Spring may silently ignore YAML.
   #  CHECK: change YAML, restart, GET /api/arena-settings; if unchanged, binding silently fails.

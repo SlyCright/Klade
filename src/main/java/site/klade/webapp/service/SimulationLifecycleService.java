@@ -20,10 +20,7 @@ public class SimulationLifecycleService {
             GenerationPersistenceService persistenceService,
             SimulationProperties properties
     ) {
-        GenomeMutator genomeMutator = new GenomeMutator(
-                properties.getBaseMetaGeneMutationChance(),
-                properties.getBaseMorphogenMutationChance(),
-                properties.getBaseGeneMutationChance());
+        GenomeMutator genomeMutator = new GenomeMutator();
         EvolutionEngine evolutionEngine = new EvolutionEngine(
                 properties.getSpecimensPerSpecies(),
                 properties.getArena(),
@@ -32,7 +29,8 @@ public class SimulationLifecycleService {
                 properties.getSpeciesTotal(),
                 properties.getSpecimensPerSpecies(),
                 properties.getSleepPerUpdateMillis(),
-                evolutionEngine);
+                evolutionEngine,
+                properties.getInitialHyperGene());
         this.simulation.setOnGenerationComplete(persistenceService::saveGeneration);
         log.info("Simulation initialized with {} species, {} specimens per species, and {} sleep per update.",
                 properties.getSpeciesTotal(),

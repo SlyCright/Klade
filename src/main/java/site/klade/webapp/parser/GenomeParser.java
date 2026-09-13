@@ -69,9 +69,7 @@ public class GenomeParser {
         List<Morphogen> morphogens = parseMorphogens(morphogenLines);
         List<Gene> genes = parseGenes(geneLines);
 
-        Genome genome = new Genome(metaGenes.getHyperGene());
-        genome.getMorphogens().addAll(morphogens);
-        genome.getGenes().addAll(genes);
+        Genome genome = new Genome(metaGenes, morphogens, genes);
         return genome;
     }
 

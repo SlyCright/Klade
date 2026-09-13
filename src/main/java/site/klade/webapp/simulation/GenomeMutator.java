@@ -27,6 +27,7 @@ public class GenomeMutator {
      */
     public Genome mutate(Genome genome, double rank) {
         Genome mutated = new Genome(genome);
+        mutated.resetFitnesses();
         // Calculate initial mutation factor from source genome's hyper-gene
         float sourceHyperGene = genome.getMetaGenes().getHyperGene();
         double initialMutationFactor = sourceHyperGene * rank;

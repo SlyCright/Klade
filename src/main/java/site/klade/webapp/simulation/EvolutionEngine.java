@@ -37,7 +37,6 @@ public class EvolutionEngine {
      * (see {@link FitnessStatistics} for the full explanation).
      */
     public void evaluateFitness(List<Species> allSpecies) {
-        resetFitnesses(allSpecies);
         ArrayList<Genome> competitionPair = new ArrayList<>(2);
         for (int speciesIndexI = 0; speciesIndexI < allSpecies.size(); speciesIndexI++) {
             for (int speciesIndexJ = speciesIndexI + 1; speciesIndexJ < allSpecies.size(); speciesIndexJ++) {
@@ -55,14 +54,6 @@ public class EvolutionEngine {
                         genomeJ.updateAccumulatedFitness();
                     }
                 }
-            }
-        }
-    }
-
-    private static void resetFitnesses(List<Species> allSpecies) {
-        for (Species species : allSpecies) {
-            for (Genome genome : species.getGenomes()) {
-                genome.resetFitnesses();
             }
         }
     }

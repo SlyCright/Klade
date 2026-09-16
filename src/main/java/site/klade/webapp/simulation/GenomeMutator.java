@@ -122,8 +122,8 @@ public class GenomeMutator {
      *
      * <p>Probabilities:</p>
      * <ul>
-     *   <li>Deletion: {@code p_del = 1 - (1 - a)^(1 + a)} — sub-linear in {@code a},
-     *       so deletion is rarer than addition for the same factor.</li>
+     *   <li>Deletion: {@code p_del = 1 - (1 - a)^(1 + a)} — super-linear in {@code a},
+     *       so deletion is slightly more common than addition for the same factor.</li>
      *   <li>Addition: {@code p_add = a}.</li>
      * </ul>
      *
@@ -131,18 +131,11 @@ public class GenomeMutator {
      * @param mutationFactor the mutation intensity (0.0 = no mutation, 1.0 = maximum mutation)
      */
     private void mutateMorphogens(List<Morphogen> morphogens, double mutationFactor) {
-        if (mutationFactor <= 0.0) {
-            return;
-        }
-        // Deletion first (at least one morphogen is always kept)
+        // Deletion first
         double deletionChance = 1.0 - Math.pow(1.0 - mutationFactor, 1.0 + mutationFactor);
-        if (morphogens.size() > 1 && random.nextDouble() < deletionChance) {
-            deleteMorphogen(morphogens, mutationFactor);
-        }
+        if (random.nextDouble() < deletionChance) deleteMorphogen(morphogens, mutationFactor);
         // Addition
-        if (random.nextDouble() < mutationFactor) {
-            addMorphogen(morphogens, mutationFactor);
-        }
+        if (random.nextDouble() < mutationFactor) addMorphogen(morphogens, mutationFactor);
     }
 
     /**

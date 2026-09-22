@@ -43,10 +43,36 @@ The project is in early development. See `CONTRIBUTING.md` to get involved.
 
 ## Setup for Development
 1. Ensure Java 17+ and PostgreSQL are installed
-2. Create `application-local.yaml` and copy `application-local.yaml.example` into it.
-3. Configure your local database and other credentials in `application-local.yaml`
+2. Create the PostgreSQL database:
+   ```sql
+   CREATE DATABASE klade;
+   ```
+3. Create `src/main/resources/application-local.yaml` with your database credentials:
+   ```yaml
+   spring:
+     datasource:
+       url: jdbc:postgresql://localhost:5432/klade
+       username: your_postgres_username
+       password: your_postgres_password
+   ```
 4. Run `./gradlew bootRun`  
 5. Open http://localhost:8080
+
+### Windows Development Notes
+
+**IntelliJ IDEA - "Command line is too long" Error**
+
+If you encounter a "Command line is too long" error when running the application from IntelliJ IDEA on Windows:
+
+1. Go to **Run → Edit Configurations**
+2. Select the `KladeWebApplication` configuration
+3. Click **Modify Options** (or "More Options" in older versions)
+4. Select **Shorten command line**
+5. Choose **JAR manifest** or **classpath file** from the dropdown
+6. Click **Apply** and **OK**
+7. Run the application again
+
+This is a Windows-specific limitation where the classpath exceeds the OS command line length limit. The workaround configures IntelliJ to use a JAR manifest or classpath file instead of passing all dependencies as command-line arguments.
 
 ## Building for Production
 Run `./gradlew clean build -Pproduction`

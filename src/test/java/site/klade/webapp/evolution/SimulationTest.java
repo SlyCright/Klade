@@ -1,4 +1,4 @@
-package site.klade.webapp.simulation;
+package site.klade.webapp.evolution;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +9,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimulationTest {
 
+    private static final double DELETION_BIAS = 0.05;
+
     private Simulation simulationWithDefaults() {
         var props = new SimulationProperties();
-        GenomeMutator genomeMutator = new GenomeMutator();
+        GenomeMutator genomeMutator = new GenomeMutator(DELETION_BIAS);
         EvolutionEngine evolutionEngine = new EvolutionEngine(
                 props.getSpecimensPerSpecies(),
                 props.getArena(),
@@ -21,7 +23,7 @@ public class SimulationTest {
                 props.getSpecimensPerSpecies(),
                 props.getSleepPerUpdateMillis(),
                 evolutionEngine,
-                props.getInitialHyperGene()
+                props.getEvolution().getInitialHyperGene()
         );
     }
 
@@ -45,7 +47,7 @@ public class SimulationTest {
         // Given
         var arenaSettings = new ArenaSettings(300f, 0.01f, 18f, 10f, 3000);
         // When
-        GenomeMutator genomeMutator = new GenomeMutator();
+        GenomeMutator genomeMutator = new GenomeMutator(DELETION_BIAS);
         EvolutionEngine evolutionEngine = new EvolutionEngine(20, arenaSettings, genomeMutator);
         Simulation simulation = new Simulation(5, 20, 200, evolutionEngine, 1.0f);
         // Then

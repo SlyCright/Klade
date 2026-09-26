@@ -1,4 +1,4 @@
-package site.klade.webapp.simulation;
+package site.klade.webapp.evolution;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GenomeMutatorTest {
 
+    /**
+     * Deletion bias threaded into the mutator pipeline; it only affects structural gene
+     * mutations, so it is irrelevant for the morphogen-focused tests below.
+     */
+    private static final double DELETION_BIAS = 0.05;
+
     private Genome genomeWithMorphogens(int count) {
         Genome genome = new Genome(0.5f);
         for (int i = 0; i < count; i++) {
@@ -24,7 +30,7 @@ public class GenomeMutatorTest {
     @DisplayName("Given any genome, when mutated with rank 0.0, then morphogen list is frozen")
     @Test
     void givenGenome_whenMutatedWithZeroRank_thenMorphogenListFrozen() {
-        GenomeMutator mutator = new GenomeMutator();
+        GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
         Genome genome = genomeWithMorphogens(3);
         // When
         Genome mutated = mutator.mutate(genome, 0.0);
@@ -43,7 +49,7 @@ public class GenomeMutatorTest {
     @DisplayName("Given genome with a single morphogen, when mutated at maximum rank many times, then at least one morphogen always survives and ids stay unique")
     @Test
     void givenSingleMorphogen_whenMutatedAtMaxRank_thenListNeverEmptiesAndIdsUnique() {
-        GenomeMutator mutator = new GenomeMutator();
+        GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
         for (int trial = 0; trial < 500; trial++) {
             Genome genome = genomeWithMorphogens(1);
             // When
@@ -61,7 +67,7 @@ public class GenomeMutatorTest {
     @DisplayName("Given genome with two morphogens, when mutated at maximum rank many times, then structural changes occur and ids stay unique")
     @Test
     void givenTwoMorphogens_whenMutatedAtMaxRank_thenStructuralChangesOccur() {
-        GenomeMutator mutator = new GenomeMutator();
+        GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
         boolean sizeChanged = false;
         for (int trial = 0; trial < 200 && !sizeChanged; trial++) {
             Genome mutated = mutator.mutate(genomeWithMorphogens(2), 1.0);
@@ -80,7 +86,7 @@ public class GenomeMutatorTest {
     @DisplayName("Given genome with one morphogen, when mutated at low rank many times, then the list may only grow (addition more probable than deletion)")
     @Test
     void givenOneMorphogen_whenMutatedAtLowRank_thenListOnlyGrows() {
-        GenomeMutator mutator = new GenomeMutator();
+        GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
         for (int trial = 0; trial < 500; trial++) {
             Genome mutated = mutator.mutate(genomeWithMorphogens(1), 0.1);
             // Deletion requires size > 1; with a single morphogen the list can never shrink

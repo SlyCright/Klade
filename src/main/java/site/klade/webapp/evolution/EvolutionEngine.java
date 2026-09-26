@@ -1,4 +1,4 @@
-package site.klade.webapp.simulation;
+package site.klade.webapp.evolution;
 
 import site.klade.simulation.Arena;
 import site.klade.simulation.ArenaSettings;

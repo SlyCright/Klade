@@ -223,7 +223,7 @@ public class GenomeParser {
     private String serializeMetaGenes(MetaGenes metaGenes) {
         StringBuilder sb = new StringBuilder();
         Field[] fields = MetaGenes.class.getDeclaredFields();
-        // Just to note: `getDeclaredFields()` does not guarantee order — serialized DSL field order is JVM-dependent
+        // Just to note: `getDeclaredFields()` does not guarantee order ??? serialized DSL field order is JVM-dependent
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
@@ -272,12 +272,12 @@ public class GenomeParser {
             return actionName;
         }
         // For other actions, include parameters
-        if (gene.getCondition() == null || gene.getCondition().isEmpty()) {
+        if (gene.getConditions() == null || gene.getConditions().isEmpty()) {
             // Unconditional gene - no "if" prefix
             return String.format("%s %s", actionName, gene.getParameters());
         } else {
             // Conditional gene with "if" prefix
-            return String.format("if %s %s %s", gene.getCondition(), actionName, gene.getParameters());
+            return String.format("if %s %s %s", gene.getConditions(), actionName, gene.getParameters());
         }
     }
 

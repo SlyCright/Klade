@@ -1,4 +1,4 @@
-package site.klade.webapp.simulation;
+package site.klade.webapp.evolution;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +12,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SimulationIntegrationTest {
 
+    private static final double DELETION_BIAS = 0.05;
+
     @Test
     @DisplayName("Given a simulation with default settings, when running multiple generations, then average fitness improves over time")
     void givenSimulationWithDefaultSettings_whenRunningMultipleGenerations_thenAverageFitnessImprovesOverTime() {
         // Given: a simulation with fast updates for testing
         var arenaSettings = new ArenaSettings(300f, 0.01f, 18f, 10f, 3000);
-        GenomeMutator genomeMutator = new GenomeMutator();
+        GenomeMutator genomeMutator = new GenomeMutator(DELETION_BIAS);
         EvolutionEngine evolutionEngine = new EvolutionEngine(5, arenaSettings, genomeMutator);
         Simulation simulation = new Simulation(2, 5, 0, evolutionEngine, 1.0f);
         simulation.setOnGenerationComplete(snapshot -> {

@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import site.klade.webapp.config.SimulationProperties;
-import site.klade.webapp.simulation.EvolutionEngine;
-import site.klade.webapp.simulation.GenomeMutator;
-import site.klade.webapp.simulation.Simulation;
+import site.klade.webapp.evolution.EvolutionEngine;
+import site.klade.webapp.evolution.GenomeMutator;
+import site.klade.webapp.evolution.Simulation;
 
 @Slf4j
 @Getter
@@ -20,7 +20,7 @@ public class SimulationLifecycleService {
             GenerationPersistenceService persistenceService,
             SimulationProperties properties
     ) {
-        GenomeMutator genomeMutator = new GenomeMutator();
+        GenomeMutator genomeMutator = new GenomeMutator(properties.getEvolution().getMutation().getDeletionBias());
         EvolutionEngine evolutionEngine = new EvolutionEngine(
                 properties.getSpecimensPerSpecies(),
                 properties.getArena(),
@@ -30,7 +30,7 @@ public class SimulationLifecycleService {
                 properties.getSpecimensPerSpecies(),
                 properties.getSleepPerUpdateMillis(),
                 evolutionEngine,
-                properties.getInitialHyperGene());
+                properties.getEvolution().getInitialHyperGene());
         this.simulation.setOnGenerationComplete(persistenceService::saveGeneration);
         log.info("Simulation initialized with {} species, {} specimens per species, and {} sleep per update.",
                 properties.getSpeciesTotal(),

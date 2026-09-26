@@ -1,12 +1,7 @@
-package site.klade.webapp.simulation;
+package site.klade.webapp.evolution;
 
 import site.klade.simulation.Genome;
-import site.klade.simulation.Gene;
-import site.klade.simulation.Morphogen;
-import site.klade.simulation.MetaGenes;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**

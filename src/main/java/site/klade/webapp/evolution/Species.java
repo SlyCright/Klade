@@ -1,4 +1,4 @@
-package site.klade.webapp.simulation;
+package site.klade.webapp.evolution;
 
 import lombok.Getter;
 import site.klade.simulation.Genome;

@@ -12,8 +12,8 @@ import site.klade.webapp.parser.GenomeParser;
 import site.klade.webapp.repository.GenerationRepository;
 import site.klade.webapp.repository.SpeciesRepository;
 import site.klade.webapp.repository.SpecimenRepository;
-import site.klade.webapp.simulation.Generation;
-import site.klade.webapp.simulation.Species;
+import site.klade.webapp.evolution.Generation;
+import site.klade.webapp.evolution.Species;
 
 import java.util.ArrayList;
 import java.util.List;

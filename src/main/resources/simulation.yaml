@@ -7,9 +7,20 @@ simulation:
   specimens-per-species: 10
   sleep-per-update-millis: 100
 
-  # Initial hyper-gene value for generation 0 genomes (R_max, domain: (0, 1]).
-  # Controls the starting mutation intensity before self-adaptation kicks in.
-  initial-hyper-gene: 1.0
+  # Genetics / evolutionary parameters
+  # (consumed by the mutator pipeline in site.klade.webapp.evolution)
+  evolution:
+
+    # Initial hyper-gene value for generation 0 genomes (R_max, domain: (0, 1]).
+    # Controls the starting mutation intensity before self-adaptation kicks in.
+    initial-hyper-gene: 1.0
+
+    # Extra probability of forcing a DELETION structural mutation on top of the flat
+    # mutation-type distribution. With 6 structural mutation types:
+    #   P(DELETION) = 1/6 + deletion-bias * 5/6   (0.05 -> ~20.8% instead of ~16.7%)
+    # which lets genomes shed unnecessary genes over long runs. Domain: [0.0, 1.0].
+    mutation:
+      deletion-bias: 0.05
 
   # Single arena battle settings (used for simulation inside Arena for every competition run)
 

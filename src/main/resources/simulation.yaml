@@ -22,6 +22,30 @@ simulation:
     mutation:
       deletion-bias: 0.05
 
+    # Ontogenesis condition-expression limits (see site.klade.simulation.condition).
+    #
+    # STATUS: WORK PIECE ONLY — NOT BOUND YET.
+    # These values are documented here but NOT read at runtime; the authoritative values are
+    # still the Java constants in ConditionParser (MAX_TREE_DEPTH, MAX_PAREN_DEPTH).
+    # Threading them through SimulationProperties is a deliberate later step: adding an unbound
+    # key is inert, whereas a half-bound one would silently diverge from the code.
+    #
+    # NOTE: these live in the WEBAPP config, but the parser is in the GWT-shared simulation
+    # library, which has no Spring and no access to this file. Threading will therefore require
+    # a static initializer / explicit setter called at startup, not field injection into
+    # ConditionParser. Decide that when we wire it.
+    condition:
+      # Maximum depth of a condition AST, counting a leaf as depth 1.
+      # Enforced by ConditionParser and (later) by structural mutation, which must use this same
+      # limit — a tree deeper than this can be built by mutation but cannot be re-parsed.
+      # Rejected well below the stack-overflow point: a ~2000-node AND chain already overflows
+      # a default JVM stack at toString() time.
+      max-tree-depth: 64
+
+      # Maximum parenthesis nesting the parser will recurse through. Parentheses do not add AST
+      # depth, so this bounds hand-written pathological input only.
+      max-paren-depth: 256
+
   # Single arena battle settings (used for simulation inside Arena for every competition run)
 
   # TODO: ArenaSettings immutable (no setters) — Spring may silently ignore YAML.

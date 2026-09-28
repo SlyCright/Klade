@@ -50,6 +50,6 @@ public final class HyperGeneMutator {
      */
     static double replace(double value, HyperGeneParams p) {
         MutationMechanics.requireFinite(value, "R_max");
-        return MutationMechanics.uniform(Math.max(R_MIN, value / 2.0), 1.0);
+        return MutationMechanics.uniform(Math.max(R_MIN, value / DRIFT_FLOOR_FACTOR), 1.0);
     }
 }

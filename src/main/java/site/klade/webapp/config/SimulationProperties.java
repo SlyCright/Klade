@@ -20,6 +20,11 @@ public class SimulationProperties {
     private int sleepPerUpdateMillis = 100;
 
     /**
+     * Ontogenesis condition-expression limits (see {@code site.klade.simulation.condition.ConditionParser}).
+     */
+    private Condition condition = new Condition();
+
+    /**
      * Genetics / evolutionary parameters consumed by the mutator pipeline
      * ({@code site.klade.webapp.evolution}).
      */
@@ -72,6 +77,24 @@ public class SimulationProperties {
          * Domain: [0.0, 1.0].
          */
         private double deletionBias = 0.05;
+    }
+
+    /**
+     * Condition-expression limits.
+     */
+    @Data
+    public static class Condition {
+
+        /**
+         * Maximum depth of a condition AST, counting a leaf as depth 1.
+         * Enforced by ConditionParser and structural mutation.
+         */
+        private int maxTreeDepth = 64;
+
+        /**
+         * Maximum parenthesis nesting the parser will recurse through.
+         */
+        private int maxParenDepth = 256;
     }
 
 }

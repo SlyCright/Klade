@@ -214,7 +214,9 @@ public class GenomeParser {
                 if (action == GeneAction.WAIT) {
                     parameters = "";
                 }
-                return new Gene(condition, action, parameters);
+                return new Gene(new Index(0), condition, action, parameters);
+                // COSMETIC UNBLOCK (R5) — see PROTOCOL.md; placeholder Index (Gene.getIndex() is
+                // read nowhere); replace with real allocation in the Gene/Genome integration task.
             }
         }
         return null; // No action found

@@ -11,7 +11,7 @@ package site.klade.webapp.evolution.value;
 public final class HyperGeneMutator {
 
     /** Divisor for the drift floor (r/dff) to prevent degeneration. */
-    public static final double DRIFT_FLOOR_FACTOR = 2.0;
+    public static final double FLOOR_FACTOR = 2.0;
 
     /** Absolute floor of the hyper-gene domain (SPEC-mutation.md OPEN-4; confirmed by the Architect). */
     public static final double R_MIN = 1e-6;
@@ -39,7 +39,7 @@ public final class HyperGeneMutator {
     static double drift(double value, HyperGeneParams p) {
         MutationMechanics.requireFinite(value, "R_max");
         final double amp = MutationMechanics.amplitude(p.mutationFactor, 1.0);
-        final double lo = Math.max(Math.max(R_MIN, value - amp / 2.0), value / DRIFT_FLOOR_FACTOR);
+        final double lo = Math.max(Math.max(R_MIN, value - amp / 2.0), value / FLOOR_FACTOR);
         final double hi = Math.min(1.0, value + amp / 2.0);
         return MutationMechanics.uniform(lo, hi);
     }
@@ -50,6 +50,6 @@ public final class HyperGeneMutator {
      */
     static double replace(double value, HyperGeneParams p) {
         MutationMechanics.requireFinite(value, "R_max");
-        return MutationMechanics.uniform(Math.max(R_MIN, value / DRIFT_FLOOR_FACTOR), 1.0);
+        return MutationMechanics.uniform(Math.max(R_MIN, value / FLOOR_FACTOR), 1.0);
     }
 }

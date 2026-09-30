@@ -1,6 +1,6 @@
 package site.klade.webapp.evolution;
 
-import site.klade.simulation.Gene;
+import site.klade.simulation.gene.Gene;
 
 import java.util.List;
 

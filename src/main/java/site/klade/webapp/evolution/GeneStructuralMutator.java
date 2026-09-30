@@ -1,6 +1,6 @@
 package site.klade.webapp.evolution;
 
-import site.klade.simulation.Gene;
+import site.klade.simulation.gene.Gene;
 
 import java.util.List;
 import java.util.Random;
@@ -48,6 +48,7 @@ public class GeneStructuralMutator {
         SHIFT               // shift a gene by N positions (rotate within list)
         // TODO: Future candidates for consideration:
         // SPLIT - split one gene into two genes
+        // ADDITION_TO_THE_END - add a new gene to the end of the gene list
         // MERGE - merge two adjacent genes into one
         // TRANSPOSITION - move a gene from one position to another
         // INVERSION - reverse the order of a segment of genes

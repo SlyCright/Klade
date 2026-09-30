@@ -3,95 +3,86 @@ package site.klade.webapp.evolution;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import site.klade.simulation.Genome;
+import site.klade.simulation.Index;
 import site.klade.simulation.Morphogen;
+import site.klade.simulation.gene.Gene;
+import site.klade.simulation.gene.GeneAction;
+import site.klade.simulation.gene.GeneSpecs;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Tests for the mutation pipeline at its current stage.
+ *
+ * <p>The previous version of this suite asserted the <i>probability-based</i> structural morphogen
+ * mutation ({@code p_deletion} / {@code p_addition}), which the plan removes: a morphogen definition now
+ * exists exactly while something references it, so add and delete are consequences of reference mutation
+ * rather than operations of their own. Those assertions are replaced by the invariant that actually holds
+ * at every stage — the morphogen set always matches the genome's references, and mutation never produces
+ * an invalid gene.</p>
+ */
 public class GenomeMutatorTest {
 
-    /**
-     * Deletion bias threaded into the mutator pipeline; it only affects structural gene
-     * mutations, so it is irrelevant for the morphogen-focused tests below.
-     */
     private static final double DELETION_BIAS = 0.05;
 
-    private Genome genomeWithMorphogens(int count) {
+    private Genome genomeWithGenes(int geneCount) {
         Genome genome = new Genome(0.5f);
-        for (int i = 0; i < count; i++) {
-            genome.getMorphogens().add(new Morphogen(i + 1, 0.5f, 0.1f, "everywhere"));
+        for (int i = 0; i < geneCount; i++) {
+            genome.getGenes().add(new Gene(new Index(i + 1), null, GeneAction.EMPTY,
+                    java.util.Collections.<site.klade.simulation.gene.GeneArg>emptyList()));
         }
         return genome;
     }
 
-    @DisplayName("Given any genome, when mutated with rank 0.0, then morphogen list is frozen")
+    @DisplayName("Given any genome, when mutated with rank 0.0, then morphogens stay in step with references")
     @Test
-    void givenGenome_whenMutatedWithZeroRank_thenMorphogenListFrozen() {
+    void givenGenome_whenMutatedWithZeroRank_thenMorphogensMatchReferences() {
         GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
-        Genome genome = genomeWithMorphogens(3);
-        // When
+        Genome genome = genomeWithGenes(3);
+        genome.getMorphogens().add(new Morphogen(new Index(1), 0.5f, 0.1f));
+        genome.deriveMorphogens();
+
         Genome mutated = mutator.mutate(genome, 0.0);
-        // Then: same size, same ids, same ratios (drift/replace never fire at factor 0)
-        List<Morphogen> original = genome.getMorphogens();
-        List<Morphogen> result = mutated.getMorphogens();
-        assertThat(result).hasSameSizeAs(original);
-        for (int i = 0; i < original.size(); i++) {
-            assertThat(result.get(i).getId()).isEqualTo(original.get(i).getId());
-            assertThat(result.get(i).getDiffusionRatio()).isEqualTo(original.get(i).getDiffusionRatio());
-            assertThat(result.get(i).getDecayRatio()).isEqualTo(original.get(i).getDecayRatio());
-        }
-        assertThat(result).isNotSameAs(original);
+
+        assertThat(mutated.getMorphogens()).isNotSameAs(genome.getMorphogens());
+        assertThat(idsOf(mutated)).isEqualTo(mutated.referencedMorphogens());
     }
 
-    @DisplayName("Given genome with a single morphogen, when mutated at maximum rank many times, then at least one morphogen always survives and ids stay unique")
+    @DisplayName("Given any genome, when mutated, every gene remains valid for its action")
     @Test
-    void givenSingleMorphogen_whenMutatedAtMaxRank_thenListNeverEmptiesAndIdsUnique() {
+    void givenGenome_whenMutated_thenEveryGeneIsValid() {
         GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
-        for (int trial = 0; trial < 500; trial++) {
-            Genome genome = genomeWithMorphogens(1);
-            // When
-            Genome mutated = mutator.mutate(genome, 1.0);
-            // Then
-            List<Morphogen> morphogens = mutated.getMorphogens();
-            assertThat(morphogens).isNotEmpty();
-            Set<Integer> ids = new HashSet<>();
-            morphogens.forEach(m -> ids.add(m.getId()));
-            assertThat(ids).hasSize(morphogens.size());
-            morphogens.forEach(m -> assertThat(m.getId()).isPositive());
+        for (int trial = 0; trial < 50; trial++) {
+            Genome mutated = mutator.mutate(genomeWithGenes(5), 1.0);
+            for (Gene gene : mutated.getGenes()) {
+                // Throws if the arguments contradict the action's declared signature.
+                GeneSpecs.validate(gene.getAction(), gene.getArguments());
+            }
         }
     }
 
-    @DisplayName("Given genome with two morphogens, when mutated at maximum rank many times, then structural changes occur and ids stay unique")
+    @DisplayName("Given any genome, when mutated, the morphogen set equals the reference set")
     @Test
-    void givenTwoMorphogens_whenMutatedAtMaxRank_thenStructuralChangesOccur() {
+    void givenGenome_whenMutated_thenMorphogenSetEqualsReferences() {
         GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
-        boolean sizeChanged = false;
-        for (int trial = 0; trial < 200 && !sizeChanged; trial++) {
-            Genome mutated = mutator.mutate(genomeWithMorphogens(2), 1.0);
-            List<Morphogen> morphogens = mutated.getMorphogens();
-            assertThat(morphogens).isNotEmpty();
-            Set<Integer> ids = new HashSet<>();
-            morphogens.forEach(m -> ids.add(m.getId()));
-            assertThat(ids).hasSize(morphogens.size());
-            sizeChanged = morphogens.size() != 2;
+        for (int trial = 0; trial < 100; trial++) {
+            Genome mutated = mutator.mutate(genomeWithGenes(4), 0.7);
+            assertThat(idsOf(mutated)).isEqualTo(mutated.referencedMorphogens());
         }
-        // At max rank deletion chance is 1.0 and addition chance is 1.0,
-        // so some divergence in list size must happen at least once
-        assertThat(sizeChanged).isTrue();
     }
 
-    @DisplayName("Given genome with one morphogen, when mutated at low rank many times, then the list may only grow (addition more probable than deletion)")
-    @Test
-    void givenOneMorphogen_whenMutatedAtLowRank_thenListOnlyGrows() {
-        GenomeMutator mutator = new GenomeMutator(DELETION_BIAS);
-        for (int trial = 0; trial < 500; trial++) {
-            Genome mutated = mutator.mutate(genomeWithMorphogens(1), 0.1);
-            // Deletion requires size > 1; with a single morphogen the list can never shrink
-            assertThat(mutated.getMorphogens().size()).isGreaterThanOrEqualTo(1);
-            assertThat(mutated.getMorphogens().size()).isLessThanOrEqualTo(2);
+    private static Set<Index> idsOf(Genome genome) {
+        Set<Index> ids = new TreeSet<Index>();
+        List<Morphogen> morphogens = genome.getMorphogens();
+        for (Morphogen morphogen : morphogens) {
+            ids.add(morphogen.getId());
         }
+        // A TreeSet also proves there are no duplicate ids.
+        assertThat(ids).hasSize(morphogens.size());
+        return ids;
     }
 }

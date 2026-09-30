@@ -1,6 +1,6 @@
 package site.klade.webapp.evolution;
 
-import site.klade.simulation.Gene;
+import site.klade.simulation.gene.Gene;
 import site.klade.simulation.Genome;
 import site.klade.simulation.MetaGenes;
 import site.klade.simulation.Morphogen;
@@ -51,7 +51,8 @@ public class GenomeMutator {
         double updatedMutationFactor = updatedHyperGene * rank;
         metaGeneMutator.mutateMetaGenes(mutated.getMetaGenes(), updatedMutationFactor);
         geneMutator.mutateGenes(mutated.getGenes(), updatedMutationFactor);
-        morphogenMutator.mutateMorphogens(mutated.getMorphogens(), updatedMutationFactor);
+        // Structure follows the references the gene phase just produced; value mutation is Step 4.
+        morphogenMutator.mutateMorphogens(mutated, updatedMutationFactor);
         return mutated;
     }
 

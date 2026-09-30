@@ -76,3 +76,13 @@ tasks.named('test') {
 test {
     enabled = true
 }
+
+// Source files are UTF-8. Without this the compiler falls back to the platform charset (Cp1251 on this
+// machine), silently corrupting non-ASCII literals — notably the degree sign in the DNA grammar inside
+// SpecimenEntity.EXAMPLE_DNA. The corruption surfaces only at runtime, as an unparsable genome.
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+tasks.withType(Test).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
